@@ -1,34 +1,35 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
+/* Zmienne CSS w stylu Apple (inspirowane Apple Music / iOS Dark Mode) */
 :root {
-  --bg-dark: #0f111a;
-  --bg-card: rgba(255, 255, 255, 0.05);
-  --bg-card-hover: rgba(255, 255, 255, 0.1);
-  --text-primary: #ffffff;
-  --text-secondary: #a0a5b5;
-  --accent: #6c5ce7;
-  --accent-hover: #8172fa;
-  --success: #00b894;
-  --error: #d63031;
-  --glass-border: rgba(255, 255, 255, 0.08);
+  --bg-dark: #000000; /* Czysta czerń, charakterystyczna dla urządzeń OLED Apple */
+  --bg-card: #1c1c1e; /* Kolor tła kafelków w iOS */
+  --bg-card-hover: #2c2c2e;
+  --text-primary: #f5f5f7; /* Kolor tekstu Apple (łamana biel) */
+  --text-secondary: #86868b; /* Szary tekst poboczny */
+  --accent: #fa243c; /* Różowa czerwień z Apple Music */
+  --accent-hover: #e01f35;
+  --success: #30d158; /* iOS Green */
+  --error: #ff453a; /* iOS Red */
+  --border-subtle: rgba(255, 255, 255, 0.1);
 }
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  -webkit-font-smoothing: antialiased; /* Wygładzanie czcionek jak w macOS */
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   background-color: var(--bg-dark);
   color: var(--text-primary);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-image: 
-    radial-gradient(circle at 15% 50%, rgba(108, 92, 231, 0.15), transparent 25%),
-    radial-gradient(circle at 85% 30%, rgba(0, 184, 148, 0.15), transparent 25%);
+  letter-spacing: -0.015em; /* Typowe dla Apple ciaśniejsze spacje literowe */
 }
 
 #root {
@@ -37,88 +38,77 @@ body {
   flex-direction: column;
 }
 
-/* Glassmorphism Utilities */
+/* Minimalistyczne Panele (zamiast ciężkiego glassmorphismu) */
 .glass-panel {
   background: var(--bg-card);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--glass-border);
-  border-radius: 24px;
-  padding: 2rem;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  border-radius: 20px;
+  padding: 3rem;
+  /* Brak obramowania, ewentualnie bardzo subtelne */
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
 }
 
-/* Buttons */
+/* Przyciski w stylu Apple (Pill-shape i duże obszary klikalne) */
 .btn {
-  background: var(--bg-card);
+  background: var(--bg-card-hover);
   color: var(--text-primary);
-  border: 1px solid var(--glass-border);
-  padding: 1rem 2rem;
-  border-radius: 16px;
-  font-size: 1.1rem;
-  font-weight: 600;
+  border: none;
+  padding: 1rem 2.5rem;
+  border-radius: 999px; /* Zaokrąglone krawędzie (pill) */
+  font-size: 1.05rem;
+  font-weight: 500;
   font-family: inherit;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  display: flex;
+  transition: all 0.2s ease-out; /* Szybkie, płynne animacje */
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
 }
 
 .btn:hover {
-  background: var(--bg-card-hover);
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  background: #3a3a3c;
+  transform: scale(1.02); /* Minimalne powiększenie, bez skakania (Y) */
 }
 
 .btn-primary {
   background: var(--accent);
-  border-color: var(--accent);
+  color: #fff;
 }
 
 .btn-primary:hover {
   background: var(--accent-hover);
-  border-color: var(--accent-hover);
 }
 
-/* Typografia */
+/* Czysta Typografia Apple */
 h1 {
   font-size: 3.5rem;
-  font-weight: 800;
+  font-weight: 700;
+  letter-spacing: -0.04em; /* Bardzo ciasno w nagłówkach */
   margin-bottom: 1rem;
-  background: linear-gradient(135deg, #fff, #a0a5b5);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--text-primary);
 }
 
 h2 {
   font-size: 2rem;
   font-weight: 600;
+  letter-spacing: -0.03em;
   margin-bottom: 1.5rem;
 }
 
 p {
   color: var(--text-secondary);
-  line-height: 1.6;
+  line-height: 1.5;
+  font-size: 1.1rem;
+  font-weight: 400;
 }
 
-/* Animations */
+/* Proste i płynne animacje */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.5s ease-out forwards;
-}
-
-@keyframes pulse-glow {
-  0% { box-shadow: 0 0 0 0 rgba(108, 92, 231, 0.4); }
-  70% { box-shadow: 0 0 0 15px rgba(108, 92, 231, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(108, 92, 231, 0); }
-}
-
-.glow-effect {
-  animation: pulse-glow 2s infinite;
+  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; /* Płynna krzywa Apple (spring-like) */
 }
