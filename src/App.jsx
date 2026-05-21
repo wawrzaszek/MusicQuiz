@@ -21,6 +21,9 @@ function App() {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [isPlayerReady, setIsPlayerReady] = useState(false);
   const [timeLeft, setTimeLeft] = useState(30);
+  
+  // Zbiór przechowujący ID piosenek, które już wystąpiły w trakcie tej sesji (odświeżenia F5)
+  const [playedSongIds, setPlayedSongIds] = useState(new Set());
 
   const audioRef = useRef(null);
 
@@ -40,13 +43,21 @@ function App() {
     setGameState(GAME_STATES.LOADING);
     setSelectedCategory(categoryId);
     
-    // Pobieramy 10 losowych utworów z iTunes API
-    const songs = await fetchRandomSongs(categoryId, 10);
+    // Pobieramy 10 losowych utworów, wykluczając te, które już były grane (playedSongIds)
+    const songs = await fetchRandomSongs(categoryId, 10, playedSongIds);
+    
     if (songs.length === 0) {
-      alert("Nie udało się pobrać utworów. Spróbuj ponownie.");
+      alert("Skończyły się nowe piosenki w tej kategorii! Odśwież stronę (F5), aby zagrać ponownie w te same utwory.");
       setGameState(GAME_STATES.MENU);
       return;
     }
+
+    // Dodajemy nowo wylosowane piosenki do zbioru "zagranych" aby się nie powtórzyły
+    setPlayedSongIds(prev => {
+      const newSet = new Set(prev);
+      songs.forEach(song => newSet.add(song.id));
+      return newSet;
+    });
 
     setPlaylist(songs);
     setCurrentSongIndex(0);

@@ -6,18 +6,23 @@ export const categories = [
   { id: 'hiphop', name: 'Hip-Hop', color: '#2a9d8f', searchTerm: 'hip-hop' }
 ];
 
-// Funkcja pobierająca losowe utwory z iTunes API
-export const fetchRandomSongs = async (categoryId, count = 10) => {
+// Funkcja pobierająca losowe utwory z iTunes API (wyklucza te już odgadnięte)
+export const fetchRandomSongs = async (categoryId, count = 10, excludeIds = new Set()) => {
   const category = categories.find(c => c.id === categoryId);
   if (!category) return [];
 
   try {
-    // Pobieramy 50 utworów z iTunes API dla danego gatunku
-    const response = await fetch(`https://itunes.apple.com/search?term=${category.searchTerm}&media=music&entity=song&limit=50`);
+    // Pobieramy więcej utworów z iTunes API na wypadek, gdyby wiele z nich było już zagranych (np. limit 100)
+    const response = await fetch(`https://itunes.apple.com/search?term=${category.searchTerm}&media=music&entity=song&limit=100`);
     const data = await response.json();
 
-    // Filtrujemy tylko te, które mają link do podglądu audio (previewUrl)
-    const validSongs = data.results.filter(song => song.previewUrl && song.trackName && song.artistName);
+    // Filtrujemy tylko te, które mają previewUrl i NIE WYSTĄPIŁY jeszcze w secie excludeIds
+    const validSongs = data.results.filter(song => 
+      song.previewUrl && 
+      song.trackName && 
+      song.artistName && 
+      !excludeIds.has(song.trackId)
+    );
 
     // Tasujemy wyniki (losowość!)
     const shuffled = validSongs.sort(() => 0.5 - Math.random());
