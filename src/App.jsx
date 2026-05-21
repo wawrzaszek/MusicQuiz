@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import YouTubePlayer from './components/YouTubePlayer';
-import { categories, songsDB, getRandomWrongAnswers } from './data/songs';
-import { FaPlay, FaMusic, FaCheck, FaTimes, FaArrowRight } from 'react-icons/fa';
+import React, { useState, useEffect, useRef } from 'react';
+import { categories, fetchRandomSongs, getRandomWrongAnswers } from './data/songs';
+import { FaMusic, FaCheck, FaTimes, FaArrowRight, FaSpinner } from 'react-icons/fa';
 import './App.css';
 
 const GAME_STATES = {
   MENU: 'MENU',
+  LOADING: 'LOADING',
   PLAYING: 'PLAYING',
   REVEALED: 'REVEALED',
   FINISHED: 'FINISHED'
@@ -20,44 +20,50 @@ function App() {
   const [options, setOptions] = useState([]);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [isPlayerReady, setIsPlayerReady] = useState(false);
-  // Stan przechowujący pozostały czas na odpowiedź (w sekundach)
   const [timeLeft, setTimeLeft] = useState(30);
 
-  // Efekt odpowiedzialny za odliczanie czasu
+  const audioRef = useRef(null);
+
   useEffect(() => {
     let timer;
-    // Odliczamy czas tylko wtedy, gdy trwa gra i odtwarzacz załadował piosenkę
     if (gameState === GAME_STATES.PLAYING && isPlayerReady && timeLeft > 0) {
       timer = setInterval(() => {
         setTimeLeft(prev => prev - 1);
       }, 1000);
     } else if (timeLeft === 0 && gameState === GAME_STATES.PLAYING) {
-      // Jeśli czas minął, a gracz nie odpowiedział, oznaczamy jako błędną odpowiedź (timeout)
-      handleAnswer(null); // null oznacza brak odpowiedzi
+      handleAnswer(null); 
     }
-
     return () => clearInterval(timer);
   }, [gameState, isPlayerReady, timeLeft]);
 
-  const startGame = (categoryId) => {
-    // Tasujemy piosenki z wybranej kategorii
-    const songs = [...songsDB[categoryId]].sort(() => 0.5 - Math.random());
-    setPlaylist(songs);
+  const startGame = async (categoryId) => {
+    setGameState(GAME_STATES.LOADING);
     setSelectedCategory(categoryId);
+    
+    // Pobieramy 10 losowych utworów z iTunes API
+    const songs = await fetchRandomSongs(categoryId, 10);
+    if (songs.length === 0) {
+      alert("Nie udało się pobrać utworów. Spróbuj ponownie.");
+      setGameState(GAME_STATES.MENU);
+      return;
+    }
+
+    setPlaylist(songs);
     setCurrentSongIndex(0);
     setScore(0);
+    generateOptions(songs[0], songs);
     setGameState(GAME_STATES.PLAYING);
-    generateOptions(songs[0], categoryId);
   };
 
-  const generateOptions = (correctSong, categoryId) => {
-    const wrong = getRandomWrongAnswers(correctSong, categoryId, 3);
+  const generateOptions = (correctSong, currentPlaylist) => {
+    const wrong = getRandomWrongAnswers(correctSong, currentPlaylist, 3);
     const correctAnswer = `${correctSong.artist} - ${correctSong.title}`;
     const allOptions = [...wrong, correctAnswer].sort(() => 0.5 - Math.random());
+    
     setOptions(allOptions);
     setSelectedAnswer(null);
     setIsPlayerReady(false);
-    setTimeLeft(30); // Resetujemy czas (30 sekund) dla nowej piosenki
+    setTimeLeft(30);
   };
 
   const handleAnswer = (answer) => {
@@ -65,14 +71,10 @@ function App() {
     
     setSelectedAnswer(answer);
     const currentSong = playlist[currentSongIndex];
-    // Sprawdzamy, czy odpowiedź jest poprawna (answer może być null po upływie czasu)
     const isCorrect = answer === `${currentSong.artist} - ${currentSong.title}`;
     
-    if (isCorrect) {
-      setScore(prev => prev + 1);
-    }
+    if (isCorrect) setScore(prev => prev + 1);
     
-    // Po udzieleniu odpowiedzi lub końcu czasu, zmieniamy stan na REVEALED
     setGameState(GAME_STATES.REVEALED);
   };
 
@@ -80,18 +82,26 @@ function App() {
     if (currentSongIndex + 1 < playlist.length) {
       const nextIndex = currentSongIndex + 1;
       setCurrentSongIndex(nextIndex);
-      generateOptions(playlist[nextIndex], selectedCategory);
+      generateOptions(playlist[nextIndex], playlist);
       setGameState(GAME_STATES.PLAYING);
     } else {
       setGameState(GAME_STATES.FINISHED);
     }
   };
 
+  // Efekt do resetowania audio gdy zmienia się piosenka
+  useEffect(() => {
+    if (audioRef.current && playlist[currentSongIndex]) {
+      audioRef.current.src = playlist[currentSongIndex].previewUrl;
+      audioRef.current.play().catch(e => console.log("Autoplay zablokowane:", e));
+    }
+  }, [currentSongIndex, playlist]);
+
   return (
     <div className="app-container">
       <header className="header">
         <h2>🎵 Co To Za Hit?</h2>
-        {gameState !== GAME_STATES.MENU && (
+        {(gameState === GAME_STATES.PLAYING || gameState === GAME_STATES.REVEALED) && (
           <div className="score-badge">Wynik: {score} / {playlist.length}</div>
         )}
       </header>
@@ -100,7 +110,7 @@ function App() {
         {gameState === GAME_STATES.MENU && (
           <div className="menu-container glass-panel animate-fade-in">
             <h1>Wybierz Kategorię</h1>
-            <p>Wybierz swój ulubiony gatunek i odgadnij wszystkie utwory!</p>
+            <p>Wybierz swój ulubiony gatunek. Utwory są losowane na żywo, więc każda gra jest inna!</p>
             
             <div className="category-grid">
               {categories.map(cat => (
@@ -118,24 +128,63 @@ function App() {
           </div>
         )}
 
+        {gameState === GAME_STATES.LOADING && (
+          <div className="loading-container glass-panel animate-fade-in" style={{textAlign: 'center', padding: '4rem'}}>
+            <FaSpinner className="spin-icon" size={48} style={{color: 'var(--accent)', animation: 'spin 1s linear infinite', marginBottom: '1rem'}} />
+            <h2>Pobieranie losowych utworów...</h2>
+            <style>{`@keyframes spin { 100% { transform: rotate(360deg); } }`}</style>
+          </div>
+        )}
+
         {(gameState === GAME_STATES.PLAYING || gameState === GAME_STATES.REVEALED) && playlist.length > 0 && (
           <div className="quiz-container glass-panel animate-fade-in">
-            <div className="player-wrapper">
-              <YouTubePlayer 
-                videoId={playlist[currentSongIndex].id}
-                isRevealed={gameState === GAME_STATES.REVEALED}
-                onReady={() => setIsPlayerReady(true)}
+            
+            {/* Odtwarzacz Audio (niewidoczny) i okładka */}
+            <div className="player-wrapper" style={{display: 'flex', justifyContent: 'center', marginBottom: '2rem'}}>
+              <audio 
+                ref={audioRef}
+                onCanPlay={() => setIsPlayerReady(true)}
+                onEnded={() => handleAnswer(null)} // Koniec piosenki = brak odpowiedzi (choć mamy własny timer 30s)
               />
+              
+              <div className="album-art-container" style={{
+                width: '250px', height: '250px', borderRadius: '20px', overflow: 'hidden',
+                boxShadow: '0 10px 30px rgba(0,0,0,0.5)', position: 'relative',
+                background: 'var(--bg-card)'
+              }}>
+                {gameState === GAME_STATES.REVEALED ? (
+                  <img 
+                    src={playlist[currentSongIndex].coverUrl} 
+                    alt="Album Art" 
+                    className="animate-fade-in"
+                    style={{width: '100%', height: '100%', objectFit: 'cover'}}
+                  />
+                ) : (
+                  <div style={{width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                    <div className="music-waves" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                      <span style={{ width: '8px', height: '24px', background: 'var(--accent)', borderRadius: '4px', animation: 'wave 1.2s infinite ease-in-out' }}></span>
+                      <span style={{ width: '8px', height: '40px', background: 'var(--accent)', borderRadius: '4px', animation: 'wave 1.2s infinite ease-in-out 0.2s' }}></span>
+                      <span style={{ width: '8px', height: '24px', background: 'var(--accent)', borderRadius: '4px', animation: 'wave 1.2s infinite ease-in-out 0.4s' }}></span>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
+            
+            <style>{`
+              @keyframes wave {
+                0%, 100% { transform: scaleY(1); }
+                50% { transform: scaleY(0.4); }
+              }
+            `}</style>
 
             <div className="quiz-content">
               {!isPlayerReady && gameState === GAME_STATES.PLAYING && (
-                <div className="loading">Ładowanie utworu...</div>
+                <div className="loading">Buforowanie utworu...</div>
               )}
 
               {isPlayerReady && (
                 <div className="options-grid">
-                  {/* Pasek postępu czasu dla piosenki */}
                   <div className="timer-bar-container">
                     <div 
                       className={`timer-bar ${timeLeft <= 10 ? 'danger' : ''}`} 
@@ -153,7 +202,6 @@ function App() {
                     let btnClass = "option-btn";
                     if (gameState === GAME_STATES.REVEALED) {
                       if (isCorrect) btnClass += " correct";
-                      // Podświetlamy błędną odpowiedź wybraną przez użytkownika (jeśli w ogóle jakąś wybrał)
                       else if (selectedAnswer === opt && !isCorrect) btnClass += " wrong";
                       else btnClass += " disabled";
                     }
@@ -175,10 +223,11 @@ function App() {
               )}
 
               {gameState === GAME_STATES.REVEALED && (
-                <div className="reveal-actions animate-fade-in" style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem'}}>
+                <div className="reveal-actions animate-fade-in" style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', marginTop: '1rem'}}>
                   {selectedAnswer === null && (
                     <div style={{color: 'var(--error)', fontWeight: 'bold', fontSize: '1.2rem'}}>Czas minął!</div>
                   )}
+                  <h3 style={{marginBottom: '0.5rem', textAlign: 'center'}}>{playlist[currentSongIndex].artist} - {playlist[currentSongIndex].title}</h3>
                   <button className="btn btn-primary next-btn" onClick={nextSong}>
                     {currentSongIndex + 1 < playlist.length ? 'Następny utwór' : 'Zakończ'} <FaArrowRight />
                   </button>
