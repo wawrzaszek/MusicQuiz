@@ -173,6 +173,40 @@
   animation: pulse 1.5s infinite ease-in-out;
 }
 
+/* Style licznika czasu (Timer) */
+.timer-bar-container {
+  grid-column: 1 / -1;
+  width: 100%;
+  height: 8px;
+  background: var(--bg-card);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.timer-bar {
+  height: 100%;
+  background: var(--accent);
+  transition: width 1s linear, background-color 0.3s ease;
+}
+
+.timer-bar.danger {
+  background: var(--error);
+}
+
+.timer-text {
+  grid-column: 1 / -1;
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+}
+
+.timer-text span {
+  color: var(--text-primary);
+}
+
 @keyframes pulse {
   0%, 100% { opacity: 0.6; }
   50% { opacity: 1; }

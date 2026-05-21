@@ -20,6 +20,24 @@ function App() {
   const [options, setOptions] = useState([]);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [isPlayerReady, setIsPlayerReady] = useState(false);
+  // Stan przechowujący pozostały czas na odpowiedź (w sekundach)
+  const [timeLeft, setTimeLeft] = useState(30);
+
+  // Efekt odpowiedzialny za odliczanie czasu
+  useEffect(() => {
+    let timer;
+    // Odliczamy czas tylko wtedy, gdy trwa gra i odtwarzacz załadował piosenkę
+    if (gameState === GAME_STATES.PLAYING && isPlayerReady && timeLeft > 0) {
+      timer = setInterval(() => {
+        setTimeLeft(prev => prev - 1);
+      }, 1000);
+    } else if (timeLeft === 0 && gameState === GAME_STATES.PLAYING) {
+      // Jeśli czas minął, a gracz nie odpowiedział, oznaczamy jako błędną odpowiedź (timeout)
+      handleAnswer(null); // null oznacza brak odpowiedzi
+    }
+
+    return () => clearInterval(timer);
+  }, [gameState, isPlayerReady, timeLeft]);
 
   const startGame = (categoryId) => {
     // Tasujemy piosenki z wybranej kategorii
@@ -39,6 +57,7 @@ function App() {
     setOptions(allOptions);
     setSelectedAnswer(null);
     setIsPlayerReady(false);
+    setTimeLeft(30); // Resetujemy czas (30 sekund) dla nowej piosenki
   };
 
   const handleAnswer = (answer) => {
@@ -46,12 +65,14 @@ function App() {
     
     setSelectedAnswer(answer);
     const currentSong = playlist[currentSongIndex];
+    // Sprawdzamy, czy odpowiedź jest poprawna (answer może być null po upływie czasu)
     const isCorrect = answer === `${currentSong.artist} - ${currentSong.title}`;
     
     if (isCorrect) {
       setScore(prev => prev + 1);
     }
     
+    // Po udzieleniu odpowiedzi lub końcu czasu, zmieniamy stan na REVEALED
     setGameState(GAME_STATES.REVEALED);
   };
 
@@ -114,6 +135,17 @@ function App() {
 
               {isPlayerReady && (
                 <div className="options-grid">
+                  {/* Pasek postępu czasu dla piosenki */}
+                  <div className="timer-bar-container">
+                    <div 
+                      className={`timer-bar ${timeLeft <= 10 ? 'danger' : ''}`} 
+                      style={{ width: `${(timeLeft / 30) * 100}%` }}
+                    ></div>
+                  </div>
+                  <div className="timer-text">
+                    Pozostały czas: <span>{timeLeft}s</span>
+                  </div>
+
                   {options.map((opt, idx) => {
                     const currentSong = playlist[currentSongIndex];
                     const isCorrect = opt === `${currentSong.artist} - ${currentSong.title}`;
@@ -121,6 +153,7 @@ function App() {
                     let btnClass = "option-btn";
                     if (gameState === GAME_STATES.REVEALED) {
                       if (isCorrect) btnClass += " correct";
+                      // Podświetlamy błędną odpowiedź wybraną przez użytkownika (jeśli w ogóle jakąś wybrał)
                       else if (selectedAnswer === opt && !isCorrect) btnClass += " wrong";
                       else btnClass += " disabled";
                     }
@@ -142,9 +175,14 @@ function App() {
               )}
 
               {gameState === GAME_STATES.REVEALED && (
-                <button className="btn btn-primary next-btn animate-fade-in" onClick={nextSong}>
-                  {currentSongIndex + 1 < playlist.length ? 'Następny utwór' : 'Zakończ'} <FaArrowRight />
-                </button>
+                <div className="reveal-actions animate-fade-in" style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem'}}>
+                  {selectedAnswer === null && (
+                    <div style={{color: 'var(--error)', fontWeight: 'bold', fontSize: '1.2rem'}}>Czas minął!</div>
+                  )}
+                  <button className="btn btn-primary next-btn" onClick={nextSong}>
+                    {currentSongIndex + 1 < playlist.length ? 'Następny utwór' : 'Zakończ'} <FaArrowRight />
+                  </button>
+                </div>
               )}
             </div>
           </div>
