@@ -1,16 +1,33 @@
-# React + Vite
+# Tonal. | Premium Music Quiz
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Witaj w **Tonal.** – nowoczesnej, minimalistycznej grze przeglądarkowej w zgadywanie utworów muzycznych, stworzonej z myślą o płynnym i eleganckim doświadczeniu (Apple Design).
 
-Currently, two official plugins are available:
+## Główne Funkcjonalności
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Błyskawiczne audio (iTunes API):** Aplikacja pobiera czyste, 30-sekundowe próbki dźwiękowe oraz okładki albumów bezpośrednio z API Apple Music. Gwarantuje to natychmiastowe ładowanie bez irytujących opóźnień znanych z wtyczek YouTube.
+- **Nieskończona losowość:** Po wybraniu kategorii (Radio Hits, Klasyczny Rock, Impreza, Hip-Hop), gra pobiera zestaw najpopularniejszych utworów i wybiera z nich 10 kompletnie losowych piosenek. Żadna runda nie jest taka sama!
+- **Mechanika z limitem czasu:** Masz 30 sekund na odgadnięcie wykonawcy i tytułu. Animowany pasek postępu naśladuje systemowe paski iOS i informuje Cię o upływającym czasie. Gdy czas dobiegnie końca, odpowiedź wyświetli się automatycznie.
+- **Wzornictwo "Apple Design":** Interfejs zaprojektowany w stylu *Cupertino*: typografia oparta na foncie `Inter`, głęboka czerń ekranów OLED, "pigułkowe" zaokrąglenia i gładkie animacje wejścia, porzucające toporny glassmorphism na rzecz lekkości i czystości.
 
-## React Compiler
+## Instrukcja uruchomienia
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Upewnij się, że masz zainstalowanego Node.js. Aby uruchomić grę lokalnie, wykonaj poniższe kroki w terminalu:
 
-## Expanding the ESLint configuration
+1. Zainstaluj niezbędne pakiety:
+   ```bash
+   npm install
+   ```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+2. Uruchom serwer deweloperski (Vite):
+   ```bash
+   npm run dev
+   ```
+
+3. Otwórz w przeglądarce adres `http://localhost:5173` i rozpocznij grę!
+
+## Autor
+
+Projekt stworzony i rozwijany przez: **Szymon Mosor**
+
+---
+Wygenerowano za pomocą [Vite](https://vitejs.dev/) oraz [React](https://reactjs.org/).
