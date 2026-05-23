@@ -1,7 +1,7 @@
 // Baza danych kategorii
 export const categories = [
   { id: 'radio', name: 'Radio Hits', color: '#ff4b4b', searchTerm: 'pop' },
-  { id: 'rock', name: 'Klasyczny Rock', color: '#fca311', searchTerm: 'rock' },
+  { id: 'rock', name: 'Klasyczny Rock', color: '#fca311', searchTerm: 'classic rock' },
   { id: 'party', name: 'Impreza', color: '#a200ff', searchTerm: 'dance' },
   { id: 'hiphop', name: 'Hip-Hop', color: '#2a9d8f', searchTerm: 'hip-hop' }
 ];
@@ -13,7 +13,7 @@ export const fetchRandomSongs = async (categoryId, count = 10, excludeIds = new 
 
   try {
     // Pobieramy więcej utworów z iTunes API na wypadek, gdyby wiele z nich było już zagranych (np. limit 100)
-    const response = await fetch(`https://itunes.apple.com/search?term=${category.searchTerm}&media=music&entity=song&limit=100`);
+    const response = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(category.searchTerm)}&media=music&entity=song&limit=100`);
     const data = await response.json();
 
     // Filtrujemy tylko te, które mają previewUrl i NIE WYSTĄPIŁY jeszcze w secie excludeIds
