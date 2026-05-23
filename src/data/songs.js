@@ -2,7 +2,7 @@
 export const categories = [
   { id: 'radio', name: 'Radio Hits', color: '#ff4b4b', searchTerm: 'pop' },
   { id: 'rock', name: 'Klasyczny Rock', color: '#fca311', searchTerm: 'classic rock' },
-  { id: 'party', name: 'Impreza', color: '#a200ff', searchTerm: 'dance' },
+  { id: 'party', name: 'Impreza', color: '#a200ff', searchTerm: 'edm house' },
   { id: 'hiphop', name: 'Hip-Hop', color: '#2a9d8f', searchTerm: 'hip-hop' }
 ];
 
