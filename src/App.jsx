@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { categories, fetchRandomSongs, getRandomWrongAnswers } from './data/songs';
-import { FaMusic, FaCheck, FaTimes, FaArrowRight, FaSpinner } from 'react-icons/fa';
+import { FaMusic, FaCheck, FaTimes, FaArrowRight, FaSpinner, FaCog } from 'react-icons/fa';
 import './App.css';
 
 const GAME_STATES = {
@@ -8,7 +8,49 @@ const GAME_STATES = {
   LOADING: 'LOADING',
   PLAYING: 'PLAYING',
   REVEALED: 'REVEALED',
-  FINISHED: 'FINISHED'
+  FINISHED: 'FINISHED',
+  OPTIONS: 'OPTIONS'
+};
+
+const t = {
+  pl: {
+    menuTitle: 'Wybierz Kategorię',
+    menuDesc: 'Wybierz swój ulubiony gatunek. Utwory są losowane na żywo, więc każda gra jest inna!',
+    loading: 'Pobieranie losowych utworów...',
+    score: 'Wynik',
+    noSongsAlert: 'Skończyły się nowe piosenki w tej kategorii! Odśwież stronę (F5), aby zagrać ponownie w te same utwory.',
+    buffering: 'Buforowanie utworu...',
+    timeLeft: 'Pozostały czas:',
+    timeUp: 'Czas minął!',
+    nextSong: 'Następny utwór',
+    finish: 'Zakończ',
+    gameOver: 'Koniec gry!',
+    yourScore: 'Twój wynik:',
+    playAgain: 'Zagraj ponownie',
+    optionsTitle: 'Opcje',
+    language: 'Język',
+    volume: 'Głośność',
+    back: 'Powrót'
+  },
+  en: {
+    menuTitle: 'Select a Category',
+    menuDesc: 'Choose your favorite genre. Songs are drawn live, so every game is different!',
+    loading: 'Downloading random songs...',
+    score: 'Score',
+    noSongsAlert: 'No new songs left in this category! Refresh the page (F5) to play the same songs again.',
+    buffering: 'Buffering song...',
+    timeLeft: 'Time left:',
+    timeUp: "Time's up!",
+    nextSong: 'Next song',
+    finish: 'Finish',
+    gameOver: 'Game Over!',
+    yourScore: 'Your score:',
+    playAgain: 'Play again',
+    optionsTitle: 'Options',
+    language: 'Language',
+    volume: 'Volume',
+    back: 'Back'
+  }
 };
 
 function App() {
@@ -22,10 +64,19 @@ function App() {
   const [isPlayerReady, setIsPlayerReady] = useState(false);
   const [timeLeft, setTimeLeft] = useState(30);
   
+  const [language, setLanguage] = useState('pl');
+  const [volume, setVolume] = useState(1.0);
+
   // Zbiór przechowujący ID piosenek, które już wystąpiły w trakcie tej sesji (odświeżenia F5)
   const [playedSongIds, setPlayedSongIds] = useState(new Set());
 
   const audioRef = useRef(null);
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume;
+    }
+  }, [volume, currentSongIndex]);
 
   useEffect(() => {
     let timer;
@@ -47,7 +98,7 @@ function App() {
     const songs = await fetchRandomSongs(categoryId, 10, playedSongIds);
     
     if (songs.length === 0) {
-      alert("Skończyły się nowe piosenki w tej kategorii! Odśwież stronę (F5), aby zagrać ponownie w te same utwory.");
+      alert(t[language].noSongsAlert);
       setGameState(GAME_STATES.MENU);
       return;
     }
@@ -112,7 +163,10 @@ function App() {
     <div className="app-container">
       <header className="header">
         {/* Logo i Nazwa Aplikacji (Minimalistyczny styl Apple) */}
-        <h2>
+        <h2 style={{cursor: 'pointer'}} onClick={() => {
+          setGameState(GAME_STATES.MENU);
+          if (audioRef.current) audioRef.current.pause();
+        }}>
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{marginRight: '8px'}}>
             <path d="M9 18V5l12-2v13"></path>
             <circle cx="6" cy="18" r="3"></circle>
@@ -120,16 +174,21 @@ function App() {
           </svg>
           Tonal.
         </h2>
-        {(gameState === GAME_STATES.PLAYING || gameState === GAME_STATES.REVEALED) && (
-          <div className="score-badge">Wynik: {score} / {playlist.length}</div>
-        )}
+        <div style={{display: 'flex', alignItems: 'center', gap: '1rem'}}>
+          {(gameState === GAME_STATES.PLAYING || gameState === GAME_STATES.REVEALED) && (
+            <div className="score-badge">{t[language].score}: {score} / {playlist.length}</div>
+          )}
+          <button className="icon-btn" onClick={() => setGameState(GAME_STATES.OPTIONS)} style={{background: 'none', border: 'none', color: 'var(--text)', cursor: 'pointer', fontSize: '1.5rem', display: 'flex'}}>
+            <FaCog />
+          </button>
+        </div>
       </header>
 
       <main className="main-content">
         {gameState === GAME_STATES.MENU && (
           <div className="menu-container glass-panel animate-fade-in">
-            <h1>Wybierz Kategorię</h1>
-            <p>Wybierz swój ulubiony gatunek. Utwory są losowane na żywo, więc każda gra jest inna!</p>
+            <h1>{t[language].menuTitle}</h1>
+            <p>{t[language].menuDesc}</p>
             
             <div className="category-grid">
               {categories.map(cat => (
@@ -140,17 +199,54 @@ function App() {
                   onClick={() => startGame(cat.id)}
                 >
                   <FaMusic size={32} />
-                  <h3>{cat.name}</h3>
+                  <h3>{cat.name[language]}</h3>
                 </button>
               ))}
             </div>
           </div>
         )}
 
+        {gameState === GAME_STATES.OPTIONS && (
+          <div className="options-container glass-panel animate-fade-in" style={{textAlign: 'center', padding: '2rem'}}>
+            <h1>{t[language].optionsTitle}</h1>
+            
+            <div className="option-group" style={{margin: '2rem 0', display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center'}}>
+              <div style={{display: 'flex', justifyContent: 'space-between', width: '100%', maxWidth: '300px', alignItems: 'center'}}>
+                <label style={{fontSize: '1.2rem', fontWeight: 'bold'}}>{t[language].language}:</label>
+                <select 
+                  value={language} 
+                  onChange={(e) => setLanguage(e.target.value)}
+                  style={{padding: '0.5rem 1rem', borderRadius: '10px', background: 'var(--bg-card)', color: 'var(--text)', border: '1px solid var(--accent)', fontSize: '1.1rem'}}
+                >
+                  <option value="pl">Polski</option>
+                  <option value="en">English</option>
+                </select>
+              </div>
+
+              <div style={{display: 'flex', justifyContent: 'space-between', width: '100%', maxWidth: '300px', alignItems: 'center'}}>
+                <label style={{fontSize: '1.2rem', fontWeight: 'bold'}}>{t[language].volume}:</label>
+                <input 
+                  type="range" 
+                  min="0" 
+                  max="1" 
+                  step="0.05" 
+                  value={volume} 
+                  onChange={(e) => setVolume(parseFloat(e.target.value))} 
+                  style={{width: '150px'}}
+                />
+              </div>
+            </div>
+
+            <button className="btn btn-primary" onClick={() => setGameState(GAME_STATES.MENU)}>
+              <FaArrowRight style={{transform: 'rotate(180deg)', marginRight: '8px'}} /> {t[language].back}
+            </button>
+          </div>
+        )}
+
         {gameState === GAME_STATES.LOADING && (
           <div className="loading-container glass-panel animate-fade-in" style={{textAlign: 'center', padding: '4rem'}}>
             <FaSpinner className="spin-icon" size={48} style={{color: 'var(--accent)', animation: 'spin 1s linear infinite', marginBottom: '1rem'}} />
-            <h2>Pobieranie losowych utworów...</h2>
+            <h2>{t[language].loading}</h2>
             <style>{`@keyframes spin { 100% { transform: rotate(360deg); } }`}</style>
           </div>
         )}
@@ -199,7 +295,7 @@ function App() {
 
             <div className="quiz-content">
               {!isPlayerReady && gameState === GAME_STATES.PLAYING && (
-                <div className="loading">Buforowanie utworu...</div>
+                <div className="loading">{t[language].buffering}</div>
               )}
 
               {isPlayerReady && (
@@ -211,7 +307,7 @@ function App() {
                     ></div>
                   </div>
                   <div className="timer-text">
-                    Pozostały czas: <span>{timeLeft}s</span>
+                    {t[language].timeLeft} <span>{timeLeft}s</span>
                   </div>
 
                   {options.map((opt, idx) => {
@@ -244,11 +340,11 @@ function App() {
               {gameState === GAME_STATES.REVEALED && (
                 <div className="reveal-actions animate-fade-in" style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', marginTop: '1rem'}}>
                   {selectedAnswer === null && (
-                    <div style={{color: 'var(--error)', fontWeight: 'bold', fontSize: '1.2rem'}}>Czas minął!</div>
+                    <div style={{color: 'var(--error)', fontWeight: 'bold', fontSize: '1.2rem'}}>{t[language].timeUp}</div>
                   )}
                   <h3 style={{marginBottom: '0.5rem', textAlign: 'center'}}>{playlist[currentSongIndex].artist} - {playlist[currentSongIndex].title}</h3>
                   <button className="btn btn-primary next-btn" onClick={nextSong}>
-                    {currentSongIndex + 1 < playlist.length ? 'Następny utwór' : 'Zakończ'} <FaArrowRight />
+                    {currentSongIndex + 1 < playlist.length ? t[language].nextSong : t[language].finish} <FaArrowRight />
                   </button>
                 </div>
               )}
@@ -258,10 +354,10 @@ function App() {
 
         {gameState === GAME_STATES.FINISHED && (
           <div className="finished-container glass-panel animate-fade-in">
-            <h1>Koniec gry!</h1>
-            <h2>Twój wynik: {score} z {playlist.length}</h2>
+            <h1>{t[language].gameOver}</h1>
+            <h2>{t[language].yourScore} {score} / {playlist.length}</h2>
             <button className="btn btn-primary" onClick={() => setGameState(GAME_STATES.MENU)}>
-              Zagraj ponownie
+              {t[language].playAgain}
             </button>
           </div>
         )}

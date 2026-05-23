@@ -1,9 +1,9 @@
 // Baza danych kategorii
 export const categories = [
-  { id: 'radio', name: 'Radio Hits', color: '#ff4b4b', searchTerm: 'pop' },
-  { id: 'rock', name: 'Klasyczny Rock', color: '#fca311', searchTerm: 'classic rock' },
-  { id: 'party', name: 'Impreza', color: '#a200ff', searchTerm: 'edm house' },
-  { id: 'hiphop', name: 'Hip-Hop', color: '#2a9d8f', searchTerm: 'hip-hop' }
+  { id: 'radio', name: { pl: 'Radio Hits', en: 'Radio Hits' }, color: '#ff4b4b', searchTerm: 'pop' },
+  { id: 'rock', name: { pl: 'Klasyczny Rock', en: 'Classic Rock' }, color: '#fca311', searchTerm: 'classic rock' },
+  { id: 'party', name: { pl: 'Impreza', en: 'Party' }, color: '#a200ff', searchTerm: 'edm house' },
+  { id: 'hiphop', name: { pl: 'Hip-Hop', en: 'Hip-Hop' }, color: '#2a9d8f', searchTerm: 'hip-hop' }
 ];
 
 // Funkcja pobierająca losowe utwory z iTunes API (wyklucza te już odgadnięte)
