@@ -12,11 +12,20 @@ export const fetchRandomSongs = async (categoryId, count = 10, excludeIds = new 
   if (!category) return [];
 
   try {
-    // Pobieramy więcej utworów z iTunes API na wypadek, gdyby wiele z nich było już zagranych (np. limit 100)
-    const response = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(category.searchTerm)}&media=music&entity=song&limit=100`);
+    const targetUrl = `https://itunes.apple.com/search?term=${encodeURIComponent(category.searchTerm)}&media=music&entity=song&limit=100`;
+    let response;
+    
+    try {
+      response = await fetch(targetUrl);
+      if (!response.ok) throw new Error("Direct fetch failed");
+    } catch (e) {
+      console.warn("Direct fetch failed, trying proxy...", e);
+      const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
+      response = await fetch(proxyUrl);
+    }
+    
     const data = await response.json();
 
-    // Filtrujemy tylko te, które mają previewUrl i NIE WYSTĄPIŁY jeszcze w secie excludeIds
     const validSongs = data.results.filter(song => 
       song.previewUrl && 
       song.trackName && 
@@ -24,16 +33,14 @@ export const fetchRandomSongs = async (categoryId, count = 10, excludeIds = new 
       !excludeIds.has(song.trackId)
     );
 
-    // Tasujemy wyniki (losowość!)
     const shuffled = validSongs.sort(() => 0.5 - Math.random());
 
-    // Formatujemy dane i zwracamy wybraną liczbę utworów
     return shuffled.slice(0, count).map(song => ({
       id: song.trackId,
       title: song.trackName,
       artist: song.artistName,
       previewUrl: song.previewUrl,
-      coverUrl: song.artworkUrl100.replace('100x100', '300x300') // Powiększamy okładkę z API
+      coverUrl: song.artworkUrl100.replace('100x100', '300x300')
     }));
   } catch (error) {
     console.error("Błąd podczas pobierania muzyki z iTunes API:", error);
