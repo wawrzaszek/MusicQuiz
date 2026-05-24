@@ -12,19 +12,18 @@ export const fetchRandomSongs = async (categoryId, count = 10, excludeIds = new 
   if (!category) return [];
 
   try {
-    const targetUrl = `https://itunes.apple.com/search?term=${encodeURIComponent(category.searchTerm)}&media=music&entity=song&limit=100`;
-    let response;
+    // Zapytanie idzie do naszego wbudowanego proxy (Vite lub Netlify)
+    const targetUrl = `/api/itunes/search?term=${encodeURIComponent(category.searchTerm)}&media=music&entity=song&limit=100`;
     
-    try {
-      response = await fetch(targetUrl);
-      if (!response.ok) throw new Error("Direct fetch failed");
-    } catch (e) {
-      console.warn("Direct fetch failed, trying proxy...", e);
-      const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
-      response = await fetch(proxyUrl);
-    }
+    const response = await fetch(targetUrl);
+    if (!response.ok) throw new Error("API Proxy responded with status " + response.status);
     
     const data = await response.json();
+
+    if (!data || !data.results || data.results.length === 0) {
+      alert("Niestety iTunes API nic nie zwróciło.");
+      return [];
+    }
 
     const validSongs = data.results.filter(song => 
       song.previewUrl && 
@@ -43,7 +42,8 @@ export const fetchRandomSongs = async (categoryId, count = 10, excludeIds = new 
       coverUrl: song.artworkUrl100.replace('100x100', '300x300')
     }));
   } catch (error) {
-    console.error("Błąd podczas pobierania muzyki z iTunes API:", error);
+    console.error("Błąd podczas pobierania muzyki:", error);
+    alert("Błąd połączenia z API: " + error.message);
     return [];
   }
 };
