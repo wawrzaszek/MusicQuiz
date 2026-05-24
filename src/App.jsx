@@ -30,7 +30,9 @@ const t = {
     optionsTitle: 'Opcje',
     language: 'Język',
     volume: 'Głośność',
-    back: 'Powrót'
+    back: 'Powrót',
+    musicSource: 'Utwory użyte w grze pochodzą z publicznego API iTunes (Apple).',
+    footerText: '© 2026 Szymon Mosor. Wszelkie prawa zastrzeżone.'
   },
   en: {
     menuTitle: 'Select a Category',
@@ -49,7 +51,9 @@ const t = {
     optionsTitle: 'Options',
     language: 'Language',
     volume: 'Volume',
-    back: 'Back'
+    back: 'Back',
+    musicSource: 'Songs used in the game are provided by the public iTunes API (Apple).',
+    footerText: '© 2026 Szymon Mosor. All rights reserved.'
   }
 };
 
@@ -235,6 +239,10 @@ function App() {
                   style={{width: '150px'}}
                 />
               </div>
+
+              <div style={{marginTop: '1.5rem', padding: '1rem', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', fontSize: '0.9rem', color: 'var(--text-secondary)', maxWidth: '400px', textAlign: 'center'}}>
+                🎵 {t[language].musicSource}
+              </div>
             </div>
 
             <button className="btn btn-primary" onClick={() => setGameState(GAME_STATES.MENU)}>
@@ -362,6 +370,10 @@ function App() {
           </div>
         )}
       </main>
+
+      <footer style={{marginTop: 'auto', paddingTop: '2rem', textAlign: 'center', opacity: 0.5, fontSize: '0.85rem'}}>
+        {t[language].footerText}
+      </footer>
     </div>
   );
 }
