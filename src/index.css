@@ -1,35 +1,48 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
 
-/* Zmienne CSS w stylu Apple (inspirowane Apple Music / iOS Dark Mode) */
 :root {
-  --bg-dark: #000000; /* Czysta czerń, charakterystyczna dla urządzeń OLED Apple */
-  --bg-card: #1c1c1e; /* Kolor tła kafelków w iOS */
-  --bg-card-hover: #2c2c2e;
-  --text-primary: #f5f5f7; /* Kolor tekstu Apple (łamana biel) */
-  --text-secondary: #86868b; /* Szary tekst poboczny */
-  --accent: #fa243c; /* Różowa czerwień z Apple Music */
-  --accent-hover: #e01f35;
-  --success: #30d158; /* iOS Green */
-  --error: #ff453a; /* iOS Red */
-  --border-subtle: rgba(255, 255, 255, 0.1);
+  --bg-color-1: #09090b;
+  --bg-color-2: #1c0e22;
+  --bg-color-3: #080d21;
+  
+  --bg-card: rgba(20, 20, 25, 0.6);
+  --bg-card-hover: rgba(30, 30, 40, 0.8);
+  
+  --text-primary: #ffffff;
+  --text-secondary: #a1a1aa;
+  
+  --accent: #ff2a5f;
+  --accent-gradient: linear-gradient(135deg, #ff2a5f 0%, #dd2476 100%);
+  --accent-hover: #ff4a7c;
+  
+  --success: #10b981;
+  --error: #ef4444;
+  
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  --neon-glow: 0 0 20px rgba(255, 42, 95, 0.4);
 }
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  -webkit-font-smoothing: antialiased; /* Wygładzanie czcionek jak w macOS */
+  -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  background-color: var(--bg-dark);
+  font-family: 'Outfit', sans-serif;
+  background: var(--bg-color-1);
+  /* A beautiful animated gradient background */
+  background: radial-gradient(circle at 15% 50%, var(--bg-color-2), transparent 50%),
+              radial-gradient(circle at 85% 30%, var(--bg-color-3), transparent 50%),
+              var(--bg-color-1);
+  background-attachment: fixed;
   color: var(--text-primary);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  letter-spacing: -0.015em; /* Typowe dla Apple ciaśniejsze spacje literowe */
 }
 
 #root {
@@ -38,77 +51,105 @@ body {
   flex-direction: column;
 }
 
-/* Minimalistyczne Panele (zamiast ciężkiego glassmorphismu) */
+/* Stunning Glassmorphism Panels */
 .glass-panel {
   background: var(--bg-card);
-  border-radius: 20px;
-  padding: 3rem;
-  /* Brak obramowania, ewentualnie bardzo subtelne */
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 24px;
+  padding: 3.5rem;
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  position: relative;
+  overflow: hidden;
 }
 
-/* Przyciski w stylu Apple (Pill-shape i duże obszary klikalne) */
+/* Subtle inner glow for glass panels */
+.glass-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  opacity: 0.5;
+}
+
+/* Global Buttons with Modern Styling */
 .btn {
-  background: var(--bg-card-hover);
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
   color: var(--text-primary);
-  border: none;
+  border: 1px solid var(--glass-border);
   padding: 1rem 2.5rem;
-  border-radius: 999px; /* Zaokrąglone krawędzie (pill) */
-  font-size: 1.05rem;
-  font-weight: 500;
+  border-radius: 100px;
+  font-size: 1.1rem;
+  font-weight: 600;
   font-family: inherit;
   cursor: pointer;
-  transition: all 0.2s ease-out; /* Szybkie, płynne animacje */
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .btn:hover {
-  background: #3a3a3c;
-  transform: scale(1.02); /* Minimalne powiększenie, bez skakania (Y) */
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+.btn:active {
+  transform: translateY(1px);
 }
 
 .btn-primary {
-  background: var(--accent);
-  color: #fff;
+  background: var(--accent-gradient);
+  border: none;
+  box-shadow: var(--neon-glow);
+  color: white;
 }
 
 .btn-primary:hover {
-  background: var(--accent-hover);
+  background: linear-gradient(135deg, #ff4a7c 0%, #e83a8b 100%);
+  box-shadow: 0 0 30px rgba(255, 42, 95, 0.6);
 }
 
-/* Czysta Typografia Apple */
+/* Typography with glows and distinct weight */
 h1 {
-  font-size: 3.5rem;
-  font-weight: 700;
-  letter-spacing: -0.04em; /* Bardzo ciasno w nagłówkach */
+  font-size: 4rem;
+  font-weight: 800;
+  line-height: 1.1;
   margin-bottom: 1rem;
-  color: var(--text-primary);
+  background: linear-gradient(to right, #fff, #a1a1aa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
 }
 
 h2 {
-  font-size: 2rem;
-  font-weight: 600;
-  letter-spacing: -0.03em;
+  font-size: 2.2rem;
+  font-weight: 700;
   margin-bottom: 1.5rem;
 }
 
 p {
   color: var(--text-secondary);
-  line-height: 1.5;
-  font-size: 1.1rem;
+  line-height: 1.6;
+  font-size: 1.15rem;
   font-weight: 400;
 }
 
-/* Proste i płynne animacje */
-@keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.98); }
-  to { opacity: 1; transform: scale(1); }
+/* Smooth enter animations */
+@keyframes fadeInSlideUp {
+  0% { opacity: 0; transform: translateY(30px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; /* Płynna krzywa Apple (spring-like) */
+  animation: fadeInSlideUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }

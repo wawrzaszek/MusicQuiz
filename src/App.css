@@ -1,223 +1,359 @@
-/* Kontener główny */
+/* Main App Layout */
 .app-container {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  padding: 3rem 2rem;
-  max-width: 1000px; /* Nieco węższy layout dla lepszej czytelności (Apple style) */
+  padding: 2rem;
+  max-width: 1200px;
   margin: 0 auto;
   width: 100%;
 }
 
-/* Nagłówek aplikacji */
+/* Header with neon glow */
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 4rem;
+  margin-bottom: 3rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--glass-border);
 }
 
 .header h2 {
   margin-bottom: 0;
-  font-size: 1.5rem;
-  font-weight: 600;
+  font-size: 1.8rem;
+  font-weight: 800;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.75rem;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  transition: text-shadow 0.3s;
 }
 
-/* Plakietka punktacji */
+.header h2:hover {
+  text-shadow: var(--neon-glow);
+}
+
+.header svg {
+  filter: drop-shadow(var(--neon-glow));
+}
+
+/* Neon Pill for Score */
 .score-badge {
-  background: var(--bg-card);
-  padding: 0.5rem 1.2rem;
-  border-radius: 999px; /* Pill shape */
-  font-weight: 500;
-  font-size: 1rem;
-  color: var(--text-secondary);
-  border: 1px solid var(--border-subtle);
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1.5rem;
+  border-radius: 100px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  box-shadow: inset 0 0 10px rgba(255, 42, 95, 0.2), 0 0 10px rgba(255, 42, 95, 0.2);
 }
 
-/* Główna sekcja */
+.icon-btn {
+  transition: transform 0.3s, color 0.3s;
+}
+
+.icon-btn:hover {
+  transform: rotate(90deg);
+  color: var(--accent) !important;
+}
+
+/* Main content wrapper */
 .main-content {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  position: relative;
+  z-index: 10;
 }
 
-.menu-container, .finished-container {
+.menu-container, .finished-container, .options-container {
   text-align: center;
-  max-width: 800px;
+  max-width: 900px;
   width: 100%;
 }
 
-/* Karty kategorii stylizowane na iOS Widgets */
+/* Stunning Category Grid */
 .category-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1.5rem;
-  margin-top: 4rem;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 2rem;
+  margin-top: 3rem;
 }
 
 .category-card {
-  background: var(--bg-card);
-  border: none;
-  border-radius: 24px; /* Duży border-radius typowy dla iOS */
-  padding: 2.5rem 1.5rem;
+  background: rgba(25, 25, 35, 0.5);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 3rem 2rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1.2rem;
+  gap: 1.5rem;
   cursor: pointer;
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s;
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
   color: var(--text-primary);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Neon glow effect on hover */
+.category-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border-radius: 20px;
+  padding: 2px;
+  background: linear-gradient(135deg, var(--cat-color), transparent 60%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.3;
+  transition: opacity 0.4s;
 }
 
 .category-card:hover {
-  transform: scale(1.03); /* Zamiast podskakiwania, powiększanie w miejscu (iOS style) */
-  background: var(--bg-card-hover);
+  transform: translateY(-8px) scale(1.02);
+  background: rgba(30, 30, 45, 0.7);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.4), 0 0 25px var(--cat-color);
 }
 
-/* Ikony używają koloru kategorii, ale w stonowany sposób */
+.category-card:hover::before {
+  opacity: 1;
+}
+
 .category-card svg {
   color: var(--cat-color);
-  opacity: 0.9;
+  filter: drop-shadow(0 0 10px var(--cat-color));
+  transition: transform 0.4s;
+}
+
+.category-card:hover svg {
+  transform: scale(1.2);
 }
 
 .category-card h3 {
-  font-size: 1.3rem;
-  font-weight: 500;
-  letter-spacing: -0.02em;
+  font-size: 1.5rem;
+  font-weight: 600;
+  z-index: 1;
 }
 
-/* Kontener Quizu */
+/* Dynamic Quiz Layout */
 .quiz-container {
   width: 100%;
-  max-width: 700px;
+  max-width: 800px;
   display: flex;
   flex-direction: column;
-  gap: 3rem;
-  background: transparent; /* Usunięcie tła panela dla czystszego widoku */
+  gap: 2.5rem;
+  background: transparent;
   box-shadow: none;
   padding: 0;
   border: none;
 }
 
-/* Okładka albumu stylizowana na okładki Apple Music */
-.album-art-container {
-  border-radius: 12px; /* Standardowy promień dla okładek muzycznych Apple */
-  box-shadow: 0 20px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.05); /* Głęboki cień */
+/* Beautiful Album Cover with Glow */
+.player-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+  position: relative;
 }
 
-/* Siatka opcji odpowiedzi */
+.album-art-container {
+  width: 280px;
+  height: 280px;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: var(--glass-shadow);
+  position: relative;
+  background: rgba(0,0,0,0.5);
+  border: 1px solid var(--glass-border);
+  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* A glowing orb behind the cover */
+.player-wrapper::after {
+  content: '';
+  position: absolute;
+  width: 280px; height: 280px;
+  background: var(--accent);
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.15;
+  z-index: -1;
+  animation: pulse-glow 4s infinite alternate;
+}
+
+@keyframes pulse-glow {
+  0% { transform: scale(0.9); opacity: 0.1; }
+  100% { transform: scale(1.1); opacity: 0.25; }
+}
+
+.music-waves span {
+  box-shadow: 0 0 10px var(--accent);
+}
+
+/* Quiz Content & Options */
 .quiz-content {
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  padding: 3rem;
+  border-radius: 24px;
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
 }
 
 .options-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+  gap: 1.2rem;
 }
 
-/* Przyciski odpowiedzi w minimalistycznym wydaniu */
+/* Modern Options Buttons */
 .option-btn {
-  background: var(--bg-card);
+  background: rgba(255, 255, 255, 0.05);
   color: var(--text-primary);
-  border: none;
+  border: 1px solid var(--glass-border);
   padding: 1.5rem;
   border-radius: 16px;
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.8rem;
+  gap: 1rem;
   text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.option-btn::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 0; height: 0;
+  background: rgba(255,255,255,0.1);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.4s, height 0.4s;
+}
+
+.option-btn:hover:not(.disabled)::after {
+  width: 300px; height: 300px;
 }
 
 .option-btn:hover:not(.disabled) {
-  background: #2c2c2e;
-  transform: scale(1.02);
+  border-color: var(--accent);
+  box-shadow: 0 0 15px rgba(255, 42, 95, 0.3);
+  transform: translateY(-2px);
 }
 
-/* Stan poprawny/błędny bez jaskrawych kolorów, bardziej stonowane jak u Apple */
+/* State Styling for Buttons */
 .option-btn.correct {
-  background: var(--success);
-  color: #fff;
+  background: rgba(16, 185, 129, 0.2);
+  border-color: var(--success);
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
 }
 
 .option-btn.wrong {
-  background: var(--error);
-  color: #fff;
+  background: rgba(239, 68, 68, 0.2);
+  border-color: var(--error);
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
 }
 
 .option-btn.disabled {
-  opacity: 0.4; /* Większe wyblaknięcie (iOS style disabled state) */
-  cursor: default;
+  opacity: 0.5;
+  cursor: not-allowed;
   transform: none !important;
 }
 
 .icon {
-  font-size: 1.2rem;
+  font-size: 1.3rem;
 }
 
-/* Pasek czasu na wzór systemowego progress baru Apple */
+/* Animated Progress Bar */
 .timer-bar-container {
   grid-column: 1 / -1;
   width: 100%;
-  height: 6px;
-  background: #2c2c2e;
-  border-radius: 999px; /* Zaokrąglone rogi paska */
+  height: 8px;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 10px;
   overflow: hidden;
   margin-bottom: 0.5rem;
+  border: 1px solid rgba(255,255,255,0.05);
 }
 
 .timer-bar {
   height: 100%;
-  background: var(--text-primary); /* Biały pasek ładowania wygląda bardzo premium */
-  border-radius: 999px;
-  transition: width 1s linear, background-color 0.3s ease;
+  background: var(--accent-gradient);
+  border-radius: 10px;
+  transition: width 1s linear, background 0.3s ease;
+  box-shadow: 0 0 10px var(--accent);
 }
 
 .timer-bar.danger {
   background: var(--error);
+  box-shadow: 0 0 15px var(--error);
 }
 
 .timer-text {
   grid-column: 1 / -1;
   text-align: center;
-  font-size: 1rem;
-  font-weight: 400;
+  font-size: 1.1rem;
+  font-weight: 500;
   color: var(--text-secondary);
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
+  letter-spacing: 1px;
 }
 
 .timer-text span {
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text-primary);
-  font-variant-numeric: tabular-nums; /* Aby cyfry licznika nie skakały (monospaced numbers) */
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 8px rgba(255,255,255,0.3);
 }
 
-/* Ekrany ładowania */
+/* Loading Spin */
 .loading {
   text-align: center;
-  color: var(--text-secondary);
-  font-weight: 500;
-  font-size: 1.1rem;
-  padding: 2rem;
-  animation: pulse 2s infinite ease-in-out;
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 1.3rem;
+  padding: 3rem;
+  animation: pulse-glow 2s infinite ease-in-out;
+  text-transform: uppercase;
+  letter-spacing: 2px;
 }
 
-@keyframes pulse {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 1; }
+/* Next / Finish Button Pop */
+.reveal-actions {
+  animation: slideUpPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes slideUpPop {
+  0% { opacity: 0; transform: translateY(20px) scale(0.9); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.reveal-actions h3 {
+  font-size: 1.8rem;
+  background: linear-gradient(to right, #fff, var(--text-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 1.5rem;
 }
 
 /* Responsywność */
@@ -226,11 +362,11 @@
     grid-template-columns: 1fr;
   }
   
-  h1 {
-    font-size: 2.8rem;
-  }
+  h1 { font-size: 2.8rem; }
   
-  .app-container {
-    padding: 2rem 1.5rem;
-  }
+  .glass-panel { padding: 2rem 1.5rem; }
+  
+  .app-container { padding: 1rem; }
+  
+  .quiz-content { padding: 1.5rem; }
 }
