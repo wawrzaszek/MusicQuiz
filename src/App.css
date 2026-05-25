@@ -76,9 +76,9 @@
   justify-content: safe center; /* Gdy wychodzą poza krawędź, zapobiega ucinaniu lewej strony */
   flex-wrap: nowrap;
   gap: 2rem;
-  margin-top: 3rem;
+  margin-top: 2rem;
   overflow-x: auto;
-  padding-bottom: 1rem;
+  padding: 1rem; /* Dodane z każdej strony, aby cienie i animacje hover nie były ucinane */
 }
 
 /* Uproszczone kafelki bez pseudo-elementów mask i blura */
