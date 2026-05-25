@@ -70,8 +70,10 @@
 
 /* Category Grid */
 .category-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  flex-wrap: wrap;
   gap: 2rem;
   margin-top: 3rem;
 }
