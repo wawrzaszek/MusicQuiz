@@ -64,7 +64,7 @@
 
 .menu-container, .finished-container, .options-container {
   text-align: center;
-  max-width: 900px;
+  max-width: 100%;
   width: 100%;
 }
 
@@ -72,7 +72,8 @@
 .category-grid {
   display: flex;
   flex-direction: row;
-  justify-content: center;
+  justify-content: center; /* Gdy się mieszczą */
+  justify-content: safe center; /* Gdy wychodzą poza krawędź, zapobiega ucinaniu lewej strony */
   flex-wrap: nowrap;
   gap: 2rem;
   margin-top: 3rem;
