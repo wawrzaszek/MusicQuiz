@@ -9,7 +9,7 @@
   width: 100%;
 }
 
-/* Header with neon glow */
+/* Header */
 .header {
   display: flex;
   justify-content: space-between;
@@ -29,32 +29,21 @@
   color: var(--text-primary);
   text-transform: uppercase;
   letter-spacing: 2px;
-  transition: text-shadow 0.3s;
 }
 
-.header h2:hover {
-  text-shadow: var(--neon-glow);
-}
-
-.header svg {
-  filter: drop-shadow(var(--neon-glow));
-}
-
-/* Neon Pill for Score */
+/* Score Pill */
 .score-badge {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(8px);
+  background: var(--bg-card);
   padding: 0.6rem 1.5rem;
   border-radius: 100px;
   font-weight: 700;
   font-size: 1.1rem;
   color: var(--accent);
   border: 1px solid var(--accent);
-  box-shadow: inset 0 0 10px rgba(255, 42, 95, 0.2), 0 0 10px rgba(255, 42, 95, 0.2);
 }
 
 .icon-btn {
-  transition: transform 0.3s, color 0.3s;
+  transition: transform 0.2s, color 0.2s;
 }
 
 .icon-btn:hover {
@@ -79,7 +68,7 @@
   width: 100%;
 }
 
-/* Stunning Category Grid */
+/* Category Grid */
 .category-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -87,9 +76,9 @@
   margin-top: 3rem;
 }
 
+/* Uproszczone kafelki bez pseudo-elementów mask i blura */
 .category-card {
-  background: rgba(25, 25, 35, 0.5);
-  backdrop-filter: blur(12px);
+  background: var(--bg-card);
   border: 1px solid var(--glass-border);
   border-radius: 20px;
   padding: 3rem 2rem;
@@ -99,51 +88,28 @@
   justify-content: center;
   gap: 1.5rem;
   cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition: transform 0.2s, background 0.2s, border-color 0.2s;
   color: var(--text-primary);
-  position: relative;
-  overflow: hidden;
-}
-
-/* Neon glow effect on hover */
-.category-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  border-radius: 20px;
-  padding: 2px;
-  background: linear-gradient(135deg, var(--cat-color), transparent 60%);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  opacity: 0.3;
-  transition: opacity 0.4s;
 }
 
 .category-card:hover {
-  transform: translateY(-8px) scale(1.02);
-  background: rgba(30, 30, 45, 0.7);
-  box-shadow: 0 15px 35px rgba(0,0,0,0.4), 0 0 25px var(--cat-color);
-}
-
-.category-card:hover::before {
-  opacity: 1;
+  transform: translateY(-4px);
+  background: var(--bg-card-hover);
+  border-color: var(--cat-color);
 }
 
 .category-card svg {
   color: var(--cat-color);
-  filter: drop-shadow(0 0 10px var(--cat-color));
-  transition: transform 0.4s;
+  transition: transform 0.2s;
 }
 
 .category-card:hover svg {
-  transform: scale(1.2);
+  transform: scale(1.1);
 }
 
 .category-card h3 {
   font-size: 1.5rem;
   font-weight: 600;
-  z-index: 1;
 }
 
 /* Dynamic Quiz Layout */
@@ -153,18 +119,13 @@
   display: flex;
   flex-direction: column;
   gap: 2.5rem;
-  background: transparent;
-  box-shadow: none;
-  padding: 0;
-  border: none;
 }
 
-/* Beautiful Album Cover with Glow */
+/* Okładka bez ciężkiego blura 60px w tle */
 .player-wrapper {
   display: flex;
   justify-content: center;
   margin-bottom: 1rem;
-  position: relative;
 }
 
 .album-art-container {
@@ -172,33 +133,9 @@
   height: 280px;
   border-radius: 24px;
   overflow: hidden;
-  box-shadow: var(--glass-shadow);
-  position: relative;
-  background: rgba(0,0,0,0.5);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+  background: #111;
   border: 1px solid var(--glass-border);
-  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-/* A glowing orb behind the cover */
-.player-wrapper::after {
-  content: '';
-  position: absolute;
-  width: 280px; height: 280px;
-  background: var(--accent);
-  border-radius: 50%;
-  filter: blur(60px);
-  opacity: 0.15;
-  z-index: -1;
-  animation: pulse-glow 4s infinite alternate;
-}
-
-@keyframes pulse-glow {
-  0% { transform: scale(0.9); opacity: 0.1; }
-  100% { transform: scale(1.1); opacity: 0.25; }
-}
-
-.music-waves span {
-  box-shadow: 0 0 10px var(--accent);
 }
 
 /* Quiz Content & Options */
@@ -207,7 +144,6 @@
   flex-direction: column;
   gap: 2rem;
   background: var(--bg-card);
-  backdrop-filter: blur(16px);
   padding: 3rem;
   border-radius: 24px;
   border: 1px solid var(--glass-border);
@@ -220,9 +156,9 @@
   gap: 1.2rem;
 }
 
-/* Modern Options Buttons */
+/* Uproszczone przyciski bez expanding circle */
 .option-btn {
-  background: rgba(255, 255, 255, 0.05);
+  background: #2a2640;
   color: var(--text-primary);
   border: 1px solid var(--glass-border);
   padding: 1.5rem;
@@ -230,52 +166,33 @@
   font-size: 1.15rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: background 0.2s, border-color 0.2s, transform 0.2s;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 1rem;
   text-align: center;
-  position: relative;
-  overflow: hidden;
-}
-
-.option-btn::after {
-  content: '';
-  position: absolute;
-  top: 50%; left: 50%;
-  width: 0; height: 0;
-  background: rgba(255,255,255,0.1);
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  transition: width 0.4s, height 0.4s;
-}
-
-.option-btn:hover:not(.disabled)::after {
-  width: 300px; height: 300px;
 }
 
 .option-btn:hover:not(.disabled) {
+  background: #363250;
   border-color: var(--accent);
-  box-shadow: 0 0 15px rgba(255, 42, 95, 0.3);
   transform: translateY(-2px);
 }
 
 /* State Styling for Buttons */
 .option-btn.correct {
-  background: rgba(16, 185, 129, 0.2);
+  background: #064e3b;
   border-color: var(--success);
-  box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
 }
 
 .option-btn.wrong {
-  background: rgba(239, 68, 68, 0.2);
+  background: #7f1d1d;
   border-color: var(--error);
-  box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
 }
 
 .option-btn.disabled {
-  opacity: 0.5;
+  opacity: 0.6;
   cursor: not-allowed;
   transform: none !important;
 }
@@ -289,24 +206,22 @@
   grid-column: 1 / -1;
   width: 100%;
   height: 8px;
-  background: rgba(0, 0, 0, 0.4);
+  background: #111;
   border-radius: 10px;
   overflow: hidden;
   margin-bottom: 0.5rem;
-  border: 1px solid rgba(255,255,255,0.05);
+  border: 1px solid var(--glass-border);
 }
 
 .timer-bar {
   height: 100%;
   background: var(--accent-gradient);
   border-radius: 10px;
-  transition: width 1s linear, background 0.3s ease;
-  box-shadow: 0 0 10px var(--accent);
+  transition: width 1s linear;
 }
 
 .timer-bar.danger {
   background: var(--error);
-  box-shadow: 0 0 15px var(--error);
 }
 
 .timer-text {
@@ -323,36 +238,32 @@
   font-weight: 700;
   color: var(--text-primary);
   font-variant-numeric: tabular-nums;
-  text-shadow: 0 0 8px rgba(255,255,255,0.3);
 }
 
-/* Loading Spin */
+/* Loading Spin (uproszczony) */
 .loading {
   text-align: center;
   color: var(--accent);
   font-weight: 600;
   font-size: 1.3rem;
   padding: 3rem;
-  animation: pulse-glow 2s infinite ease-in-out;
   text-transform: uppercase;
   letter-spacing: 2px;
 }
 
-/* Next / Finish Button Pop */
+/* Uproszczona animacja dla Reveal */
 .reveal-actions {
-  animation: slideUpPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: slideUp 0.3s ease-out;
 }
 
-@keyframes slideUpPop {
-  0% { opacity: 0; transform: translateY(20px) scale(0.9); }
-  100% { opacity: 1; transform: translateY(0) scale(1); }
+@keyframes slideUp {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 
 .reveal-actions h3 {
   font-size: 1.8rem;
-  background: linear-gradient(to right, #fff, var(--text-secondary));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: #fff;
   margin-bottom: 1.5rem;
 }
 
