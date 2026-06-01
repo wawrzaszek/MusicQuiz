@@ -1,14 +1,10 @@
 // Baza danych kategorii
 export const categories = [
-  { id: 'radio', name: { pl: 'Radio Hits', en: 'Radio Hits' }, color: '#ff4b4b', searchTerm: 'pop' },
-  { id: 'rock', name: { pl: 'Klasyczny Rock', en: 'Classic Rock' }, color: '#fca311', searchTerm: 'classic rock' },
-  // Wyszukiwanie najbardziej popularnych utworów imprezowych (party songs) dla kategorii Impreza
-  { id: 'party', name: { pl: 'Impreza', en: 'Party' }, color: '#a200ff', searchTerm: 'party songs' },
+  { id: 'radio', name: { pl: 'Radio Hits', en: 'Radio Hits' }, color: '#ff4b4b', searchTerm: ['pop', 'party songs'] },
+  { id: 'rock', name: { pl: 'Klasyczny Rock', en: 'Classic Rock' }, color: '#fca311', searchTerm: ['classic rock', 'heavy metal'] },
   { id: 'hiphop', name: { pl: 'Hip-Hop', en: 'Hip-Hop' }, color: '#2a9d8f', searchTerm: 'hip-hop' },
-  // Dodanie kategorii Metal
-  { id: 'metal', name: { pl: 'Metal', en: 'Metal' }, color: '#4a4a4a', searchTerm: 'heavy metal' },
   // Dodanie kategorii Polska Muzyka (będzie losować jedno z haseł przy każdym zapytaniu)
-  { id: 'plmusic', name: { pl: 'Polska Muzyka', en: 'Polish Music' }, color: '#e53935', searchTerm: ['dżem', 'kombi', 'lady pank', 'perfect', 'budka suflera'] }
+  { id: 'plmusic', name: { pl: 'Polska Muzyka', en: 'Polish Music' }, color: '#e53935', searchTerm: ['dżem', 'kombi', 'lady pank', 'perfect', 'budka suflera', 'akcent', 'boys', 'sławomir', 'zenon martyniuk', 'disco polo', 'krzysztof krawczyk', 'maryla rodowicz', 'sanah', 'dawid podsiadło', 'polski pop'] }
 ];
 
 // Funkcja pobierająca losowe utwory z iTunes API (wyklucza te już odgadnięte)
