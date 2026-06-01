@@ -13,31 +13,47 @@ export const fetchRandomSongs = async (categoryId, count = 10, excludeIds = new 
   if (!category) return [];
 
   try {
-    let term = category.searchTerm;
-    // Jeśli wyszukiwane hasło to tablica (np. dla polskiej muzyki), wylosuj jedno z nich
-    if (Array.isArray(term)) {
-        term = term[Math.floor(Math.random() * term.length)];
+    let terms = [];
+    if (Array.isArray(category.searchTerm)) {
+      // Losujemy kilka różnych haseł (np. 4), aby zapewnić różnorodność artystów w jednej grze
+      const shuffledTerms = [...category.searchTerm].sort(() => 0.5 - Math.random());
+      terms = shuffledTerms.slice(0, 4);
+    } else {
+      terms = [category.searchTerm];
     }
     
-    // Zapytanie idzie do naszego wbudowanego proxy (Vite lub Netlify)
-    const targetUrl = `/api/itunes/search?term=${encodeURIComponent(term)}&media=music&entity=song&limit=100`;
+    // Pobieramy wyniki równolegle dla wylosowanych haseł
+    const fetchPromises = terms.map(async (term) => {
+      const targetUrl = `/api/itunes/search?term=${encodeURIComponent(term)}&media=music&entity=song&limit=30`;
+      try {
+        const response = await fetch(targetUrl);
+        if (response.ok) {
+          const data = await response.json();
+          return data?.results || [];
+        }
+      } catch (e) {
+        console.error("Błąd dla hasła: ", term, e);
+      }
+      return [];
+    });
     
-    const response = await fetch(targetUrl);
-    if (!response.ok) throw new Error("API Proxy responded with status " + response.status);
-    
-    const data = await response.json();
+    const resultsArrays = await Promise.all(fetchPromises);
+    const allResults = resultsArrays.flat();
 
-    if (!data || !data.results || data.results.length === 0) {
+    if (!allResults || allResults.length === 0) {
       alert("Niestety iTunes API nic nie zwróciło.");
       return [];
     }
 
-    const validSongs = data.results.filter(song => 
-      song.previewUrl && 
-      song.trackName && 
-      song.artistName && 
-      !excludeIds.has(song.trackId)
-    );
+    // Unikalne piosenki, z pominięciem już odgadniętych i duplikatów z różnych zapytań
+    const seenIds = new Set(excludeIds);
+    const validSongs = allResults.filter(song => {
+      if (!song.previewUrl || !song.trackName || !song.artistName || seenIds.has(song.trackId)) {
+        return false;
+      }
+      seenIds.add(song.trackId);
+      return true;
+    });
 
     const shuffled = validSongs.sort(() => 0.5 - Math.random());
 
