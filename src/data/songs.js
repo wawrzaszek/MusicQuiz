@@ -2,8 +2,13 @@
 export const categories = [
   { id: 'radio', name: { pl: 'Radio Hits', en: 'Radio Hits' }, color: '#ff4b4b', searchTerm: 'pop' },
   { id: 'rock', name: { pl: 'Klasyczny Rock', en: 'Classic Rock' }, color: '#fca311', searchTerm: 'classic rock' },
-  { id: 'party', name: { pl: 'Impreza', en: 'Party' }, color: '#a200ff', searchTerm: 'edm house' },
-  { id: 'hiphop', name: { pl: 'Hip-Hop', en: 'Hip-Hop' }, color: '#2a9d8f', searchTerm: 'hip-hop' }
+  // Zmiana wyszukiwania na typowo house'owe utwory dla kategorii Impreza
+  { id: 'party', name: { pl: 'Impreza', en: 'Party' }, color: '#a200ff', searchTerm: 'house music' },
+  { id: 'hiphop', name: { pl: 'Hip-Hop', en: 'Hip-Hop' }, color: '#2a9d8f', searchTerm: 'hip-hop' },
+  // Dodanie kategorii Metal
+  { id: 'metal', name: { pl: 'Metal', en: 'Metal' }, color: '#4a4a4a', searchTerm: 'heavy metal' },
+  // Dodanie kategorii Polska Muzyka (będzie losować jedno z haseł przy każdym zapytaniu)
+  { id: 'plmusic', name: { pl: 'Polska Muzyka', en: 'Polish Music' }, color: '#e53935', searchTerm: ['dżem', 'kombi', 'lady pank', 'perfect', 'budka suflera'] }
 ];
 
 // Funkcja pobierająca losowe utwory z iTunes API (wyklucza te już odgadnięte)
@@ -12,8 +17,14 @@ export const fetchRandomSongs = async (categoryId, count = 10, excludeIds = new 
   if (!category) return [];
 
   try {
+    let term = category.searchTerm;
+    // Jeśli wyszukiwane hasło to tablica (np. dla polskiej muzyki), wylosuj jedno z nich
+    if (Array.isArray(term)) {
+        term = term[Math.floor(Math.random() * term.length)];
+    }
+    
     // Zapytanie idzie do naszego wbudowanego proxy (Vite lub Netlify)
-    const targetUrl = `/api/itunes/search?term=${encodeURIComponent(category.searchTerm)}&media=music&entity=song&limit=100`;
+    const targetUrl = `/api/itunes/search?term=${encodeURIComponent(term)}&media=music&entity=song&limit=100`;
     
     const response = await fetch(targetUrl);
     if (!response.ok) throw new Error("API Proxy responded with status " + response.status);
