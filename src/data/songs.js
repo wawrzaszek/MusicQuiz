@@ -1,6 +1,6 @@
 // Baza danych kategorii
 export const categories = [
-  { id: 'radio', name: { pl: 'Radio Hits', en: 'Radio Hits' }, color: '#ff4b4b', searchTerm: ['pop', 'party songs', '80s', '90s', '00s', '10s'] },
+  { id: 'radio', name: { pl: 'Radio Hits', en: 'Radio Hits' }, color: '#ff4b4b', searchTerm: ['pop hits', 'party songs', 'david guetta', 'katy perry', 'lady gaga', 'rihanna', 'dua lipa', 'ed sheeran', 'the weeknd', 'calvin harris', 'pitbull', 'shakira', 'bruno mars', 'maroon 5', 'taylor swift', 'justin timberlake', 'coldplay', 'top 40'] },
   { id: 'rock', name: { pl: 'Klasyczny Rock', en: 'Classic Rock' }, color: '#fca311', searchTerm: ['classic rock', 'metal'] },
   { id: 'hiphop', name: { pl: 'Hip-Hop', en: 'Hip-Hop' }, color: '#2a9d8f', searchTerm: ['rap hits', 'oldschool hip-hop', '2pac', 'eminem', 'snoop dogg', 'dr dre', 'notorious b.i.g.', 'kendrick lamar', '50 cent', 'jay-z', 'nas', 'wu-tang clan'] },
   // Dodanie kategorii Polska Muzyka (będzie losować jedno z haseł przy każdym zapytaniu)
