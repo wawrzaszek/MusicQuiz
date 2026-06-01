@@ -47,10 +47,21 @@ export const fetchRandomSongs = async (categoryId, count = 10, excludeIds = new 
 
     // Unikalne piosenki, z pominięciem już odgadniętych i duplikatów z różnych zapytań
     const seenIds = new Set(excludeIds);
+    const seenSignatures = new Set();
+    
     const validSongs = allResults.filter(song => {
       if (!song.previewUrl || !song.trackName || !song.artistName || seenIds.has(song.trackId)) {
         return false;
       }
+      
+      // Tworzymy unikalny podpis piosenki, żeby uniknąć sytuacji gdy iTunes zwraca
+      // ten sam utwór z dwóch różnych albumów (inne trackId, ale ten sam kawałek).
+      const signature = `${song.artistName.toLowerCase().trim()} - ${song.trackName.toLowerCase().trim()}`;
+      if (seenSignatures.has(signature)) {
+        return false;
+      }
+      
+      seenSignatures.add(signature);
       seenIds.add(song.trackId);
       return true;
     });
