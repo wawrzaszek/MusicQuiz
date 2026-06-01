@@ -2,8 +2,8 @@
 export const categories = [
   { id: 'radio', name: { pl: 'Radio Hits', en: 'Radio Hits' }, color: '#ff4b4b', searchTerm: 'pop' },
   { id: 'rock', name: { pl: 'Klasyczny Rock', en: 'Classic Rock' }, color: '#fca311', searchTerm: 'classic rock' },
-  // Zmiana wyszukiwania na typowo house'owe utwory dla kategorii Impreza
-  { id: 'party', name: { pl: 'Impreza', en: 'Party' }, color: '#a200ff', searchTerm: 'house music' },
+  // Wyszukiwanie najbardziej popularnych utworów imprezowych (party songs) dla kategorii Impreza
+  { id: 'party', name: { pl: 'Impreza', en: 'Party' }, color: '#a200ff', searchTerm: 'party songs' },
   { id: 'hiphop', name: { pl: 'Hip-Hop', en: 'Hip-Hop' }, color: '#2a9d8f', searchTerm: 'hip-hop' },
   // Dodanie kategorii Metal
   { id: 'metal', name: { pl: 'Metal', en: 'Metal' }, color: '#4a4a4a', searchTerm: 'heavy metal' },
