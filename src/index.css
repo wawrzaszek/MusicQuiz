@@ -87,11 +87,13 @@ body {
 .btn-primary {
   background: var(--accent);
   border: 1px solid var(--accent);
-  color: #ffffff;
+  color: #121212;
+  font-weight: 500;
 }
 
 .btn-primary:hover {
   background: var(--accent-hover);
+  color: #000000;
 }
 
 /* Delikatna typografia */
