@@ -156,51 +156,87 @@
   box-shadow: none;
 }
 
-.options-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.2rem;
+/* Autocomplete Search Styles */
+.search-wrapper {
+  position: relative;
+  width: 100%;
 }
 
-/* Uproszczone przyciski bez expanding circle */
-.option-btn {
+.search-input {
+  width: 100%;
+  padding: 1.2rem;
+  font-size: 1.1rem;
+  border-radius: 8px;
+  border: 1px solid var(--glass-border);
   background: var(--bg-card);
   color: var(--text-primary);
-  border: 1px solid var(--glass-border);
-  padding: 1rem;
-  border-radius: 6px;
-  font-size: 1rem;
-  font-weight: 300;
-  cursor: pointer;
+  font-family: inherit;
   transition: all 0.2s;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
+}
+
+.search-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.suggestions-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 0.5rem;
+  background: var(--bg-card);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  list-style: none;
+  max-height: 250px;
+  overflow-y: auto;
+  z-index: 50;
+  box-shadow: var(--glass-shadow);
+  padding: 0.5rem 0;
+}
+
+.suggestions-list li {
+  padding: 0.8rem 1.2rem;
+  cursor: pointer;
+  color: var(--text-primary);
+  transition: background 0.2s;
+  text-align: left;
+}
+
+.suggestions-list li:hover {
+  background: var(--bg-card-hover);
+  color: var(--accent);
+}
+
+.answer-feedback {
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 500;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  text-align: center;
 }
 
-.option-btn:hover:not(.disabled) {
-  background: var(--bg-card-hover);
-  border-color: var(--accent);
-}
-
-/* State Styling for Buttons */
-.option-btn.correct {
-  background: var(--bg-card);
-  border-color: var(--success);
+.answer-feedback.correct {
+  background: rgba(76, 175, 80, 0.1);
   color: var(--success);
+  border: 1px solid var(--success);
 }
 
-.option-btn.wrong {
-  background: var(--bg-card);
-  border-color: var(--error);
+.answer-feedback.wrong {
+  background: rgba(239, 83, 80, 0.1);
   color: var(--error);
-}
-
-.option-btn.disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+  border: 1px solid var(--error);
 }
 
 .icon {

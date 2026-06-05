@@ -32,7 +32,8 @@ const t = {
     volume: 'Głośność',
     back: 'Powrót',
     musicSource: 'Utwory użyte w grze pochodzą z publicznego API iTunes (Apple).',
-    footerText: '© 2026 Szymon Mosor. Wszelkie prawa zastrzeżone.'
+    footerText: '© 2026 Szymon Mosor. Wszelkie prawa zastrzeżone.',
+    searchPlaceholder: 'Wpisz artystę lub tytuł...'
   },
   en: {
     menuTitle: 'Select a Category',
@@ -53,7 +54,8 @@ const t = {
     volume: 'Volume',
     back: 'Back',
     musicSource: 'Songs used in the game are provided by the public iTunes API (Apple).',
-    footerText: '© 2026 Szymon Mosor. All rights reserved.'
+    footerText: '© 2026 Szymon Mosor. All rights reserved.',
+    searchPlaceholder: 'Type artist or title...'
   }
 };
 
@@ -63,7 +65,9 @@ function App() {
   const [currentSongIndex, setCurrentSongIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [playlist, setPlaylist] = useState([]);
-  const [options, setOptions] = useState([]);
+  const [dictionary, setDictionary] = useState([]);
+  const [inputValue, setInputValue] = useState('');
+  const [suggestions, setSuggestions] = useState([]);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [isPlayerReady, setIsPlayerReady] = useState(false);
   const [timeLeft, setTimeLeft] = useState(30);
@@ -99,9 +103,10 @@ function App() {
     setSelectedCategory(categoryId);
     
     // Pobieramy 10 losowych utworów, wykluczając te, które już były grane (playedSongIds)
-    const songs = await fetchRandomSongs(categoryId, 10, playedSongIds);
+    const result = await fetchRandomSongs(categoryId, 10, playedSongIds);
+    const songs = result.playlist;
     
-    if (songs.length === 0) {
+    if (!songs || songs.length === 0) {
       alert(t[language].noSongsAlert);
       setGameState(GAME_STATES.MENU);
       return;
@@ -115,21 +120,54 @@ function App() {
     });
 
     setPlaylist(songs);
+    setDictionary(result.dictionary);
     setCurrentSongIndex(0);
     setScore(0);
-    generateOptions(songs[0], songs);
+    resetRound();
     setGameState(GAME_STATES.PLAYING);
   };
 
-  const generateOptions = (correctSong, currentPlaylist) => {
-    const wrong = getRandomWrongAnswers(correctSong, currentPlaylist, 3);
-    const correctAnswer = `${correctSong.artist} - ${correctSong.title}`;
-    const allOptions = [...wrong, correctAnswer].sort(() => 0.5 - Math.random());
-    
-    setOptions(allOptions);
+  const resetRound = () => {
+    setInputValue('');
+    setSuggestions([]);
     setSelectedAnswer(null);
     setIsPlayerReady(false);
     setTimeLeft(30);
+  };
+
+  const handleInputChange = (e) => {
+    if (gameState !== GAME_STATES.PLAYING) return;
+    const val = e.target.value;
+    setInputValue(val);
+
+    if (val.trim().length > 1) {
+      const lowerVal = val.toLowerCase();
+      const filtered = dictionary.filter(song => 
+        song.artist.toLowerCase().includes(lowerVal) || 
+        song.title.toLowerCase().includes(lowerVal)
+      );
+      const uniqueStrings = Array.from(new Set(filtered.map(s => `${s.artist} - ${s.title}`))).slice(0, 6);
+      setSuggestions(uniqueStrings);
+    } else {
+      setSuggestions([]);
+    }
+  };
+
+  const handleSuggestionClick = (answer) => {
+    if (gameState !== GAME_STATES.PLAYING) return;
+    setInputValue(answer);
+    setSuggestions([]);
+    handleAnswer(answer);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && inputValue.trim() !== '') {
+      if (suggestions.length > 0) {
+        handleSuggestionClick(suggestions[0]);
+      } else {
+        handleAnswer(inputValue);
+      }
+    }
   };
 
   const handleAnswer = (answer) => {
@@ -137,9 +175,13 @@ function App() {
     
     setSelectedAnswer(answer);
     const currentSong = playlist[currentSongIndex];
-    const isCorrect = answer === `${currentSong.artist} - ${currentSong.title}`;
     
-    if (isCorrect) setScore(prev => prev + 1);
+    if (answer) {
+      // Ignorujemy wielkość liter i białe znaki do porównania
+      const formattedAnswer = answer.toLowerCase().replace(/\s+/g, ' ').trim();
+      const correctAnswer = `${currentSong.artist} - ${currentSong.title}`.toLowerCase().replace(/\s+/g, ' ').trim();
+      if (formattedAnswer === correctAnswer) setScore(prev => prev + 1);
+    }
     
     setGameState(GAME_STATES.REVEALED);
   };
@@ -148,7 +190,7 @@ function App() {
     if (currentSongIndex + 1 < playlist.length) {
       const nextIndex = currentSongIndex + 1;
       setCurrentSongIndex(nextIndex);
-      generateOptions(playlist[nextIndex], playlist);
+      resetRound();
       setGameState(GAME_STATES.PLAYING);
     } else {
       setGameState(GAME_STATES.FINISHED);
@@ -307,7 +349,7 @@ function App() {
               )}
 
               {isPlayerReady && (
-                <div className="options-grid">
+                <div className="autocomplete-container" style={{display: 'flex', flexDirection: 'column', gap: '1rem'}}>
                   <div className="timer-bar-container">
                     <div 
                       className={`timer-bar ${timeLeft <= 10 ? 'danger' : ''}`} 
@@ -318,30 +360,40 @@ function App() {
                     {t[language].timeLeft} <span>{timeLeft}s</span>
                   </div>
 
-                  {options.map((opt, idx) => {
-                    const currentSong = playlist[currentSongIndex];
-                    const isCorrect = opt === `${currentSong.artist} - ${currentSong.title}`;
+                  <div className="search-wrapper">
+                    <input 
+                      type="text" 
+                      className="search-input"
+                      placeholder={t[language].searchPlaceholder}
+                      value={inputValue}
+                      onChange={handleInputChange}
+                      onKeyDown={handleKeyDown}
+                      disabled={gameState === GAME_STATES.REVEALED}
+                      autoFocus
+                      autoComplete="off"
+                    />
                     
-                    let btnClass = "option-btn";
-                    if (gameState === GAME_STATES.REVEALED) {
-                      if (isCorrect) btnClass += " correct";
-                      else if (selectedAnswer === opt && !isCorrect) btnClass += " wrong";
-                      else btnClass += " disabled";
-                    }
+                    {suggestions.length > 0 && gameState === GAME_STATES.PLAYING && (
+                      <ul className="suggestions-list">
+                        {suggestions.map((sug, idx) => (
+                          <li key={idx} onClick={() => handleSuggestionClick(sug)}>
+                            {sug}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
 
-                    return (
-                      <button 
-                        key={idx}
-                        className={btnClass}
-                        onClick={() => handleAnswer(opt)}
-                        disabled={gameState === GAME_STATES.REVEALED}
-                      >
-                        {gameState === GAME_STATES.REVEALED && isCorrect && <FaCheck className="icon" />}
-                        {gameState === GAME_STATES.REVEALED && selectedAnswer === opt && !isCorrect && <FaTimes className="icon" />}
-                        {opt}
-                      </button>
-                    );
-                  })}
+                  {gameState === GAME_STATES.REVEALED && (
+                    <div className={`answer-feedback ${
+                      selectedAnswer && selectedAnswer.toLowerCase().replace(/\s+/g, ' ').trim() === `${playlist[currentSongIndex].artist} - ${playlist[currentSongIndex].title}`.toLowerCase().replace(/\s+/g, ' ').trim() ? 'correct' : 'wrong'
+                    }`}>
+                      {selectedAnswer && selectedAnswer.toLowerCase().replace(/\s+/g, ' ').trim() === `${playlist[currentSongIndex].artist} - ${playlist[currentSongIndex].title}`.toLowerCase().replace(/\s+/g, ' ').trim() ? 
+                        <><FaCheck className="icon" /> Poprawnie!</> : 
+                        <><FaTimes className="icon" /> Błędna odpowiedź</>
+                      }
+                    </div>
+                  )}
                 </div>
               )}
 

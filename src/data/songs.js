@@ -91,17 +91,27 @@ export const fetchRandomSongs = async (categoryId, count = 10, excludeIds = new 
       }
     }
 
-    return finalSelection.map(song => ({
+    const playlist = finalSelection.map(song => ({
       id: song.trackId,
       title: song.trackName,
       artist: song.artistName,
       previewUrl: song.previewUrl,
       coverUrl: song.artworkUrl100.replace('100x100', '300x300')
     }));
+
+    const dictionary = validSongs.map(song => ({
+      id: song.trackId,
+      title: song.trackName,
+      artist: song.artistName,
+      previewUrl: song.previewUrl,
+      coverUrl: song.artworkUrl100.replace('100x100', '300x300')
+    }));
+
+    return { playlist, dictionary };
   } catch (error) {
     console.error("Błąd podczas pobierania muzyki:", error);
     alert("Błąd połączenia z API: " + error.message);
-    return [];
+    return { playlist: [], dictionary: [] };
   }
 };
 
