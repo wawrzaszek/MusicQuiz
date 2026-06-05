@@ -68,7 +68,30 @@ export const fetchRandomSongs = async (categoryId, count = 10, excludeIds = new 
 
     const shuffled = validSongs.sort(() => 0.5 - Math.random());
 
-    return shuffled.slice(0, count).map(song => ({
+    const finalSelection = [];
+    const usedArtists = new Set();
+    
+    // Krok 1: Wybieramy po jednym utworze od każdego artysty dla różnorodności
+    for (const song of shuffled) {
+      if (finalSelection.length >= count) break;
+      const artist = song.artistName.toLowerCase().trim();
+      if (!usedArtists.has(artist)) {
+        usedArtists.add(artist);
+        finalSelection.push(song);
+      }
+    }
+    
+    // Krok 2: Jeśli brakuje nam utworów do pełnej puli, dobieramy z pozostałych (dopuszczając powtórki artystów)
+    if (finalSelection.length < count) {
+      for (const song of shuffled) {
+        if (finalSelection.length >= count) break;
+        if (!finalSelection.find(s => s.trackId === song.trackId)) {
+          finalSelection.push(song);
+        }
+      }
+    }
+
+    return finalSelection.map(song => ({
       id: song.trackId,
       title: song.trackName,
       artist: song.artistName,
