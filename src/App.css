@@ -21,25 +21,24 @@
 
 .header h2 {
   margin-bottom: 0;
-  font-size: 1.8rem;
-  font-weight: 800;
+  font-size: 1.5rem;
+  font-weight: 300;
   display: flex;
   align-items: center;
   gap: 0.75rem;
   color: var(--text-primary);
-  text-transform: uppercase;
-  letter-spacing: 2px;
+  letter-spacing: 1px;
 }
 
 /* Score Pill */
 .score-badge {
-  background: var(--bg-card);
-  padding: 0.6rem 1.5rem;
-  border-radius: 100px;
-  font-weight: 700;
-  font-size: 1.1rem;
-  color: var(--accent);
-  border: 1px solid var(--accent);
+  background: transparent;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 400;
+  font-size: 1rem;
+  color: var(--text-primary);
+  border: 1px solid var(--glass-border);
 }
 
 .icon-btn {
@@ -83,41 +82,41 @@
 
 /* Uproszczone kafelki bez pseudo-elementów mask i blura */
 .category-card {
-  width: 220px;
-  height: 220px;
+  width: 200px;
+  height: 200px;
   flex-shrink: 0;
   background: var(--bg-card);
   border: 1px solid var(--glass-border);
-  border-radius: 20px;
+  border-radius: 12px;
   padding: 2rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1.5rem;
+  gap: 1rem;
   cursor: pointer;
-  transition: transform 0.2s, background 0.2s, border-color 0.2s;
+  transition: all 0.2s;
   color: var(--text-primary);
 }
 
 .category-card:hover {
-  transform: translateY(-4px);
   background: var(--bg-card-hover);
-  border-color: var(--cat-color);
+  border-color: var(--accent);
 }
 
 .category-card svg {
-  color: var(--cat-color);
-  transition: transform 0.2s;
+  color: var(--text-primary);
+  transition: opacity 0.2s;
+  opacity: 0.8;
 }
 
 .category-card:hover svg {
-  transform: scale(1.1);
+  opacity: 1;
 }
 
 .category-card h3 {
-  font-size: 1.5rem;
-  font-weight: 600;
+  font-size: 1.2rem;
+  font-weight: 400;
 }
 
 /* Dynamic Quiz Layout */
@@ -137,12 +136,11 @@
 }
 
 .album-art-container {
-  width: 280px;
-  height: 280px;
-  border-radius: 24px;
+  width: 240px;
+  height: 240px;
+  border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-  background: #111;
+  background: var(--bg-card-hover);
   border: 1px solid var(--glass-border);
 }
 
@@ -150,12 +148,12 @@
 .quiz-content {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
-  background: var(--bg-card);
-  padding: 3rem;
-  border-radius: 24px;
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow);
+  gap: 1.5rem;
+  background: transparent;
+  padding: 2rem;
+  border-radius: 0;
+  border: none;
+  box-shadow: none;
 }
 
 .options-grid {
@@ -166,43 +164,43 @@
 
 /* Uproszczone przyciski bez expanding circle */
 .option-btn {
-  background: #2a2640;
+  background: var(--bg-card);
   color: var(--text-primary);
   border: 1px solid var(--glass-border);
-  padding: 1.5rem;
-  border-radius: 16px;
-  font-size: 1.15rem;
-  font-weight: 500;
+  padding: 1rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 300;
   cursor: pointer;
-  transition: background 0.2s, border-color 0.2s, transform 0.2s;
+  transition: all 0.2s;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
+  gap: 0.5rem;
   text-align: center;
 }
 
 .option-btn:hover:not(.disabled) {
-  background: #363250;
+  background: var(--bg-card-hover);
   border-color: var(--accent);
-  transform: translateY(-2px);
 }
 
 /* State Styling for Buttons */
 .option-btn.correct {
-  background: #064e3b;
+  background: var(--bg-card);
   border-color: var(--success);
+  color: var(--success);
 }
 
 .option-btn.wrong {
-  background: #7f1d1d;
+  background: var(--bg-card);
   border-color: var(--error);
+  color: var(--error);
 }
 
 .option-btn.disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
-  transform: none !important;
 }
 
 .icon {
@@ -213,18 +211,18 @@
 .timer-bar-container {
   grid-column: 1 / -1;
   width: 100%;
-  height: 8px;
-  background: #111;
-  border-radius: 10px;
+  height: 4px;
+  background: var(--glass-border);
+  border-radius: 2px;
   overflow: hidden;
   margin-bottom: 0.5rem;
-  border: 1px solid var(--glass-border);
+  border: none;
 }
 
 .timer-bar {
   height: 100%;
-  background: var(--accent-gradient);
-  border-radius: 10px;
+  background: var(--accent);
+  border-radius: 2px;
   transition: width 1s linear;
 }
 
@@ -235,28 +233,24 @@
 .timer-text {
   grid-column: 1 / -1;
   text-align: center;
-  font-size: 1.1rem;
-  font-weight: 500;
+  font-size: 0.9rem;
+  font-weight: 300;
   color: var(--text-secondary);
   margin-bottom: 1rem;
-  letter-spacing: 1px;
 }
 
 .timer-text span {
-  font-weight: 700;
+  font-weight: 500;
   color: var(--text-primary);
-  font-variant-numeric: tabular-nums;
 }
 
 /* Loading Spin (uproszczony) */
 .loading {
   text-align: center;
   color: var(--accent);
-  font-weight: 600;
-  font-size: 1.3rem;
+  font-weight: 400;
+  font-size: 1.1rem;
   padding: 3rem;
-  text-transform: uppercase;
-  letter-spacing: 2px;
 }
 
 /* Uproszczona animacja dla Reveal */

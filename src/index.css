@@ -1,24 +1,24 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap');
 
 :root {
-  --bg-color-1: #0f0c20;
-  --bg-color-2: #1c0e22;
+  --bg-color-1: #fafafa;
+  --bg-color-2: #f0f0f0;
   
-  --bg-card: #181525;
-  --bg-card-hover: #221e35;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f9f9f9;
   
-  --text-primary: #ffffff;
-  --text-secondary: #a1a1aa;
+  --text-primary: #222222;
+  --text-secondary: #777777;
   
-  --accent: #ff2a5f;
-  --accent-gradient: linear-gradient(135deg, #ff2a5f 0%, #dd2476 100%);
-  --accent-hover: #ff4a7c;
+  --accent: #444444;
+  --accent-gradient: #444444;
+  --accent-hover: #111111;
   
-  --success: #10b981;
-  --error: #ef4444;
+  --success: #2e8b57;
+  --error: #d9534f;
   
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.15);
+  --glass-border: rgba(0, 0, 0, 0.05);
+  --glass-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
 }
 
 * {
@@ -30,10 +30,10 @@
 }
 
 body {
-  font-family: 'Outfit', sans-serif;
-  /* Prosty, lekki w renderowaniu gradient */
-  background: linear-gradient(135deg, var(--bg-color-1) 0%, var(--bg-color-2) 100%);
-  background-attachment: fixed;
+  font-family: 'Inter', sans-serif;
+  font-weight: 300;
+  /* Prosty, jasny kolor tła */
+  background: var(--bg-color-1);
   color: var(--text-primary);
   min-height: 100vh;
   display: flex;
@@ -46,25 +46,25 @@ body {
   flex-direction: column;
 }
 
-/* Uproszczone panele bez obciążającego backdrop-filter */
+/* Uproszczone panele o minimalistycznym wyglądzie */
 .glass-panel {
   background: var(--bg-card);
-  border-radius: 24px;
+  border-radius: 12px;
   padding: 3.5rem;
   border: 1px solid var(--glass-border);
   box-shadow: var(--glass-shadow);
   position: relative;
 }
 
-/* Global Buttons with Modern Styling */
+/* Globalne przyciski z delikatnym stylem */
 .btn {
-  background: #2a2640;
+  background: transparent;
   color: var(--text-primary);
   border: 1px solid var(--glass-border);
-  padding: 1rem 2.5rem;
-  border-radius: 100px;
-  font-size: 1.1rem;
-  font-weight: 600;
+  padding: 0.8rem 2rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 400;
   font-family: inherit;
   cursor: pointer;
   transition: all 0.2s ease-out;
@@ -72,13 +72,12 @@ body {
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
 }
 
 .btn:hover {
-  background: #363250;
-  transform: translateY(-2px);
+  background: var(--bg-card-hover);
+  border-color: var(--accent);
 }
 
 .btn:active {
@@ -86,42 +85,41 @@ body {
 }
 
 .btn-primary {
-  background: var(--accent-gradient);
-  border: none;
-  color: white;
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  color: #ffffff;
 }
 
 .btn-primary:hover {
-  background: linear-gradient(135deg, #ff4a7c 0%, #e83a8b 100%);
+  background: var(--accent-hover);
 }
 
-/* Uproszczona typografia */
+/* Delikatna typografia */
 h1 {
-  font-size: 4rem;
-  font-weight: 800;
-  line-height: 1.1;
+  font-size: 3rem;
+  font-weight: 300;
+  line-height: 1.2;
   margin-bottom: 1rem;
-  background: linear-gradient(to right, #fff, #a1a1aa);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--text-primary);
 }
 
 h2 {
-  font-size: 2.2rem;
-  font-weight: 700;
+  font-size: 2rem;
+  font-weight: 300;
   margin-bottom: 1.5rem;
+  color: var(--text-primary);
 }
 
 p {
   color: var(--text-secondary);
   line-height: 1.6;
-  font-size: 1.15rem;
-  font-weight: 400;
+  font-size: 1.1rem;
+  font-weight: 300;
 }
 
 /* Proste animacje wejścia */
 @keyframes fadeInSlideUp {
-  0% { opacity: 0; transform: translateY(20px); }
+  0% { opacity: 0; transform: translateY(10px); }
   100% { opacity: 1; transform: translateY(0); }
 }
 

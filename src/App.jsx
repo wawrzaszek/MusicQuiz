@@ -240,8 +240,8 @@ function App() {
                 />
               </div>
 
-              <div style={{marginTop: '1.5rem', padding: '1rem', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', fontSize: '0.9rem', color: 'var(--text-secondary)', maxWidth: '400px', textAlign: 'center'}}>
-                🎵 {t[language].musicSource}
+              <div style={{marginTop: '1.5rem', padding: '1rem', background: 'var(--bg-card-hover)', borderRadius: '12px', fontSize: '0.9rem', color: 'var(--text-secondary)', maxWidth: '400px', textAlign: 'center'}}>
+                {t[language].musicSource}
               </div>
             </div>
 
