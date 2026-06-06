@@ -99,6 +99,15 @@ function App() {
   }, [gameState, isPlayerReady, timeLeft]);
 
   const startGame = async (categoryId) => {
+    // HACK dla iOS Safari: Przeglądarki mobilne blokują odtwarzanie audio (autoplay), 
+    // jeśli nie jest ono wynikiem bezpośredniej interakcji użytkownika. Ponieważ API pobiera dane
+    // asynchronicznie, iOS gubi "pozwolenie" na odtwarzanie. Zmuszamy więc odtwarzacz do działania 
+    // z cichym, milisekundowym plikiem dźwiękowym w momencie kliknięcia przycisku kategorii.
+    if (audioRef.current) {
+      audioRef.current.src = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA";
+      audioRef.current.play().catch(() => {}); // Ignorujemy błędy tego technicznego odtworzenia
+    }
+
     setGameState(GAME_STATES.LOADING);
     setSelectedCategory(categoryId);
     
@@ -197,13 +206,29 @@ function App() {
     }
   };
 
+  const [autoplayFailed, setAutoplayFailed] = useState(false);
+
   // Efekt do resetowania audio gdy zmienia się piosenka
   useEffect(() => {
     if (audioRef.current && playlist[currentSongIndex]) {
+      setAutoplayFailed(false);
       audioRef.current.src = playlist[currentSongIndex].previewUrl;
-      audioRef.current.play().catch(e => console.log("Autoplay zablokowane:", e));
+      audioRef.current.play().catch(e => {
+        console.log("Autoplay zablokowane przez przeglądarkę (iOS / Tryb Oszczędzania Energii):", e);
+        // Jeśli iOS nadal blokuje odtwarzanie, ukrywamy ekran buforowania i pokazujemy ręczny przycisk odtwórz
+        setAutoplayFailed(true);
+        setIsPlayerReady(true);
+      });
     }
   }, [currentSongIndex, playlist]);
+
+  const manualPlay = () => {
+    if (audioRef.current) {
+      audioRef.current.play().then(() => {
+        setAutoplayFailed(false);
+      }).catch(e => console.error("Ręczne odtwarzanie zawiodło:", e));
+    }
+  };
 
   return (
     <div className="app-container">
@@ -326,11 +351,19 @@ function App() {
                   />
                 ) : (
                   <div style={{width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                    <div className="music-waves" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                      <span style={{ width: '8px', height: '24px', background: 'var(--accent)', borderRadius: '4px', animation: 'wave 1.2s infinite ease-in-out' }}></span>
-                      <span style={{ width: '8px', height: '40px', background: 'var(--accent)', borderRadius: '4px', animation: 'wave 1.2s infinite ease-in-out 0.2s' }}></span>
-                      <span style={{ width: '8px', height: '24px', background: 'var(--accent)', borderRadius: '4px', animation: 'wave 1.2s infinite ease-in-out 0.4s' }}></span>
-                    </div>
+                    {autoplayFailed ? (
+                      <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem'}}>
+                         <button className="btn btn-primary" onClick={manualPlay} style={{fontSize: '1rem', padding: '0.8rem 1.5rem', borderRadius: '50px'}}>
+                           ▶ Odtwórz
+                         </button>
+                      </div>
+                    ) : (
+                      <div className="music-waves" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                        <span style={{ width: '8px', height: '24px', background: 'var(--accent)', borderRadius: '4px', animation: 'wave 1.2s infinite ease-in-out' }}></span>
+                        <span style={{ width: '8px', height: '40px', background: 'var(--accent)', borderRadius: '4px', animation: 'wave 1.2s infinite ease-in-out 0.2s' }}></span>
+                        <span style={{ width: '8px', height: '24px', background: 'var(--accent)', borderRadius: '4px', animation: 'wave 1.2s infinite ease-in-out 0.4s' }}></span>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -368,7 +401,7 @@ function App() {
                       value={inputValue}
                       onChange={handleInputChange}
                       onKeyDown={handleKeyDown}
-                      disabled={gameState === GAME_STATES.REVEALED}
+                      disabled={gameState === GAME_STATES.REVEALED || autoplayFailed}
                       autoFocus
                       autoComplete="off"
                     />
