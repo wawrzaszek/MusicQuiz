@@ -311,6 +311,13 @@
     grid-template-columns: 1fr;
   }
   
+  /* Zmiana układu kategorii z poziomego na pionowy dla urządzeń mobilnych */
+  .category-grid {
+    flex-direction: column;
+    align-items: center;
+    overflow-x: hidden;
+  }
+  
   h1 { font-size: 2.8rem; }
   
   .glass-panel { padding: 2rem 1.5rem; }
