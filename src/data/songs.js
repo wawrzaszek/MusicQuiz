@@ -24,12 +24,21 @@ export const fetchRandomSongs = async (categoryId, count = 10, excludeIds = new 
     
     // Pobieramy wyniki równolegle dla wylosowanych haseł
     const fetchPromises = terms.map(async (term) => {
-      const targetUrl = `/api/itunes/search?term=${encodeURIComponent(term)}&media=music&entity=song&limit=30`;
+      // Używamy pełnego, bezpośredniego adresu URL do API iTunes, aby uniknąć problemów na iPhone'ach (Safari czasami blokuje proxy lub ma problemy z relatywnymi URL w fetch)
+      const targetUrl = `https://itunes.apple.com/search?term=${encodeURIComponent(term)}&media=music&entity=song&limit=30`;
       try {
-        const response = await fetch(targetUrl);
+        // Dodajemy nagłówki akceptacji, aby wymusić prawidłowy format zwrotny
+        const response = await fetch(targetUrl, {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json'
+          }
+        });
         if (response.ok) {
           const data = await response.json();
           return data?.results || [];
+        } else {
+          console.error("Błąd odpowiedzi API dla hasła:", term, "Status:", response.status);
         }
       } catch (e) {
         console.error("Błąd dla hasła: ", term, e);
