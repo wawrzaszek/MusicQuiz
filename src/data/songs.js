@@ -7,6 +7,36 @@ export const categories = [
   { id: 'plmusic', name: { pl: 'Polska Muzyka', en: 'Polish Music' }, color: '#e53935', searchTerm: ['dżem', 'kombi', 'lady pank', 'perfect', 'budka suflera', 'zespół akcent', 'zespół boys', 'sławomir', 'zenon martyniuk', 'disco polo', 'krzysztof krawczyk', 'maryla rodowicz', 'sanah', 'dawid podsiadło', 'polski pop'] }
 ];
 
+// Funkcja pomocnicza do pobierania danych z iTunes API za pomocą JSONP
+// JSONP omija restrykcje CORS i blokady fetch w iOS Safari
+const fetchItunesJSONP = (url) => {
+  return new Promise((resolve, reject) => {
+    const callbackName = 'itunes_cb_' + Math.round(1000000 * Math.random());
+    
+    // Globalna funkcja callback, którą wywoła skrypt z iTunes
+    window[callbackName] = (data) => {
+      resolve(data);
+      // Sprzątanie
+      delete window[callbackName];
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+    };
+    
+    const script = document.createElement('script');
+    script.src = url + (url.includes('?') ? '&' : '?') + 'callback=' + callbackName;
+    script.onerror = () => {
+      reject(new Error("Błąd sieci lub zablokowane zapytanie JSONP"));
+      delete window[callbackName];
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+    };
+    
+    document.body.appendChild(script);
+  });
+};
+
 // Funkcja pobierająca losowe utwory z iTunes API (wyklucza te już odgadnięte)
 export const fetchRandomSongs = async (categoryId, count = 10, excludeIds = new Set()) => {
   const category = categories.find(c => c.id === categoryId);
@@ -24,22 +54,11 @@ export const fetchRandomSongs = async (categoryId, count = 10, excludeIds = new 
     
     // Pobieramy wyniki równolegle dla wylosowanych haseł
     const fetchPromises = terms.map(async (term) => {
-      // Używamy pełnego, bezpośredniego adresu URL do API iTunes, aby uniknąć problemów na iPhone'ach (Safari czasami blokuje proxy lub ma problemy z relatywnymi URL w fetch)
-      const targetUrl = `https://itunes.apple.com/search?term=${encodeURIComponent(term)}&media=music&entity=song&limit=30`;
+      // Używamy JSONP, dodajemy również unikalny znacznik czasu, by ominąć agresywne cache w Safari
+      const targetUrl = `https://itunes.apple.com/search?term=${encodeURIComponent(term)}&media=music&entity=song&limit=30&t=${Date.now()}`;
       try {
-        // Dodajemy nagłówki akceptacji, aby wymusić prawidłowy format zwrotny
-        const response = await fetch(targetUrl, {
-          method: 'GET',
-          headers: {
-            'Accept': 'application/json'
-          }
-        });
-        if (response.ok) {
-          const data = await response.json();
-          return data?.results || [];
-        } else {
-          console.error("Błąd odpowiedzi API dla hasła:", term, "Status:", response.status);
-        }
+        const data = await fetchItunesJSONP(targetUrl);
+        return data?.results || [];
       } catch (e) {
         console.error("Błąd dla hasła: ", term, e);
       }
