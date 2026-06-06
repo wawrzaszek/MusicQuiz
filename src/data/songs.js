@@ -7,36 +7,6 @@ export const categories = [
   { id: 'plmusic', name: { pl: 'Polska Muzyka', en: 'Polish Music' }, color: '#e53935', searchTerm: ['dżem', 'kombi', 'lady pank', 'perfect', 'budka suflera', 'zespół akcent', 'zespół boys', 'sławomir', 'zenon martyniuk', 'disco polo', 'krzysztof krawczyk', 'maryla rodowicz', 'sanah', 'dawid podsiadło', 'polski pop'] }
 ];
 
-// Funkcja pomocnicza do pobierania danych z iTunes API za pomocą JSONP
-// JSONP omija restrykcje CORS i blokady fetch w iOS Safari
-const fetchItunesJSONP = (url) => {
-  return new Promise((resolve, reject) => {
-    const callbackName = 'itunes_cb_' + Math.round(1000000 * Math.random());
-    
-    // Globalna funkcja callback, którą wywoła skrypt z iTunes
-    window[callbackName] = (data) => {
-      resolve(data);
-      // Sprzątanie
-      delete window[callbackName];
-      if (script.parentNode) {
-        script.parentNode.removeChild(script);
-      }
-    };
-    
-    const script = document.createElement('script');
-    script.src = url + (url.includes('?') ? '&' : '?') + 'callback=' + callbackName;
-    script.onerror = () => {
-      reject(new Error("Błąd sieci lub zablokowane zapytanie JSONP"));
-      delete window[callbackName];
-      if (script.parentNode) {
-        script.parentNode.removeChild(script);
-      }
-    };
-    
-    document.body.appendChild(script);
-  });
-};
-
 // Funkcja pobierająca losowe utwory z iTunes API (wyklucza te już odgadnięte)
 export const fetchRandomSongs = async (categoryId, count = 10, excludeIds = new Set()) => {
   const category = categories.find(c => c.id === categoryId);
@@ -54,14 +24,34 @@ export const fetchRandomSongs = async (categoryId, count = 10, excludeIds = new 
     
     // Pobieramy wyniki równolegle dla wylosowanych haseł
     const fetchPromises = terms.map(async (term) => {
-      // Używamy JSONP, dodajemy również unikalny znacznik czasu, by ominąć agresywne cache w Safari
-      const targetUrl = `https://itunes.apple.com/search?term=${encodeURIComponent(term)}&media=music&entity=song&limit=30&t=${Date.now()}`;
-      try {
-        const data = await fetchItunesJSONP(targetUrl);
-        return data?.results || [];
-      } catch (e) {
-        console.error("Błąd dla hasła: ", term, e);
+      // Przygotowujemy oryginalny URL
+      const itunesUrl = `https://itunes.apple.com/search?term=${encodeURIComponent(term)}&media=music&entity=song&limit=30`;
+      
+      // Tworzymy "pancerny" system fallbacków (zapasowych linków)
+      // Jeśli Apple (lub adblock na iPhone) blokuje domenę itunes.apple.com lub relatywne proxy, 
+      // zapytanie przejdzie przez anonimowe serwery proxy, całkowicie maskując ruch przed iOS.
+      const urlsToTry = [
+        `/api/itunes/search?term=${encodeURIComponent(term)}&media=music&entity=song&limit=30`, // 1. Nasze lokalne proxy (Vite / Netlify)
+        `https://api.allorigins.win/raw?url=${encodeURIComponent(itunesUrl)}`,                  // 2. Zewnętrzne Proxy AllOrigins (ukrywa domenę Apple)
+        `https://corsproxy.io/?${encodeURIComponent(itunesUrl)}`,                               // 3. Zewnętrzne Proxy CorsProxy.io
+        itunesUrl                                                                               // 4. Bezpośrednie uderzenie w API (ostateczność)
+      ];
+
+      for (const url of urlsToTry) {
+        try {
+          const response = await fetch(url, { cache: 'no-store' }); // Wyłączamy cache, żeby Safari nie zwracało zepsutych wyników
+          if (response.ok) {
+            const data = await response.json();
+            if (data && data.results) {
+              return data.results; // Zwracamy wyniki po pierwszym udanym trafieniu
+            }
+          }
+        } catch (e) {
+          console.warn(`[Fallback] Zapytanie do ${url} odrzucone (blokada iOS?). Próbuję następne...`);
+        }
       }
+      
+      console.error("Wszystkie metody połączenia zawiodły dla hasła: ", term);
       return [];
     });
     
