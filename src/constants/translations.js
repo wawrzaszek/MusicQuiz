@@ -1,0 +1,47 @@
+// src/constants/translations.js
+export const t = {
+  pl: {
+    menuTitle: 'Wybierz Kategorię',
+    menuDesc: 'Wybierz swój ulubiony gatunek. Utwory są losowane na żywo, więc każda gra jest inna!',
+    loading: 'Pobieranie losowych utworów...',
+    score: 'Wynik',
+    noSongsAlert: 'Skończyły się nowe piosenki w tej kategorii! Odśwież stronę (F5), aby zagrać ponownie w te same utwory.',
+    buffering: 'Buforowanie utworu...',
+    timeLeft: 'Pozostały czas:',
+    timeUp: 'Czas minął!',
+    nextSong: 'Następny utwór',
+    finish: 'Zakończ',
+    gameOver: 'Koniec gry!',
+    yourScore: 'Twój wynik:',
+    playAgain: 'Zagraj ponownie',
+    optionsTitle: 'Opcje',
+    language: 'Język',
+    volume: 'Głośność',
+    back: 'Powrót',
+    musicSource: 'Utwory użyte w grze pochodzą z publicznego API iTunes (Apple).',
+    footerText: '© 2026 Szymon Mosor. Wszelkie prawa zastrzeżone.',
+    searchPlaceholder: 'Wpisz artystę lub tytuł...'
+  },
+  en: {
+    menuTitle: 'Select a Category',
+    menuDesc: 'Choose your favorite genre. Songs are drawn live, so every game is different!',
+    loading: 'Downloading random songs...',
+    score: 'Score',
+    noSongsAlert: 'No new songs left in this category! Refresh the page (F5) to play the same songs again.',
+    buffering: 'Buffering song...',
+    timeLeft: 'Time left:',
+    timeUp: "Time's up!",
+    nextSong: 'Next song',
+    finish: 'Finish',
+    gameOver: 'Game Over!',
+    yourScore: 'Your score:',
+    playAgain: 'Play again',
+    optionsTitle: 'Options',
+    language: 'Language',
+    volume: 'Volume',
+    back: 'Back',
+    musicSource: 'Songs used in the game are provided by the public iTunes API (Apple).',
+    footerText: '© 2026 Szymon Mosor. All rights reserved.',
+    searchPlaceholder: 'Type artist or title...'
+  }
+};
