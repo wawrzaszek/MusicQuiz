@@ -7,7 +7,7 @@ import { categories } from '../data/songs';
 const MainMenu = ({ language, onStartGame }) => {
   return (
     <div className="menu-container glass-panel animate-fade-in">
-      <h1>{t[language].menuTitle}</h1>
+      <h1 style={{ fontWeight: 'bold' }}>{t[language].menuTitle}</h1>
       <p>{t[language].menuDesc}</p>
       
       <div className="category-grid">
