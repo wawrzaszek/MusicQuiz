@@ -26,7 +26,9 @@ function App() {
   const [timeLeft, setTimeLeft] = useState(30);
   
   const [language, setLanguage] = useState('pl');
-  const [volume, setVolume] = useState(1.0);
+  // Ustawienie domyślnej głośności na 50% (0.5), aby nagły, głośny dźwięk nie przestraszył 
+  // użytkownika przy pierwszym uruchomieniu gry (aby uniknąć tzw. earrape'a po odpaleniu piosenki).
+  const [volume, setVolume] = useState(0.5);
 
   // Zbiór przechowujący ID piosenek, które już wystąpiły w trakcie tej sesji (odświeżenia F5)
   const [playedSongIds, setPlayedSongIds] = useState(new Set());
