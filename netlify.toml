@@ -1,5 +1,8 @@
+[build]
+  functions = "netlify/functions"
+
 [[redirects]]
   from = "/api/itunes/*"
-  to = "https://itunes.apple.com/:splat"
+  to = "/.netlify/functions/itunes"
   status = 200
   force = true
